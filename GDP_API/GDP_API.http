@@ -1,6 +1,10 @@
-@GDP_API_HostAddress = http://localhost:5153
+@GDP_API_HostAddress = https://localhost:7258
 
 GET {{GDP_API_HostAddress}}/weatherforecast/
 Accept: application/json
+
+###
+
+GET {{GDP_API_HostAddress}}/weatherforecast
 
 ###
