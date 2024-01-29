@@ -27,12 +27,12 @@ builder.Services.AddAuthentication().AddJwtBearer( options => {
     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        ValidateAudience = false,
-        ValidateIssuer = false,
         IssuerSigningKey  = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 builder.Configuration
                 .GetSection("AppSettings:Token")
                 .Value!)),
+        ValidateAudience = false,
+        ValidateIssuer = false,
     };
 });
 builder.Services.AddDbContext<DataContext>(options => {
@@ -52,6 +52,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -41,12 +41,20 @@ public class UserService : IUserService
     public async Task<User> Register(RegisterDTO request)
     {
         string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-        User user = new User { 
-            Email = request.Email, 
-            Password = passwordHash,
-            Name = request.Name,
-            Surname = request.Surname,
-        };
+        User user = new User 
+    { 
+        Name = request.Name,
+        Surname = request.Surname,
+        Email = request.Email, 
+        PhoneNumber = request.PhoneNumber,
+        Password = passwordHash,
+        // Restore = request.Restore,
+        // Confirmed = request.Confirmed,
+        // Token = request.Token,
+        TermsAccepted = request.TermsAccepted,
+        CreatedDate = request.CreatedDate,
+        UserTypeId = request.UserTypeId
+    };
         return await _repository.AddUser(user);
        
         
@@ -61,6 +69,7 @@ public class UserService : IUserService
         }
 
         var tokenHandler = new JwtSecurityTokenHandler();
+        //TODO - Use Azure keystore for production
         var key = Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value!);
 
         var tokenDescriptor = new SecurityTokenDescriptor

@@ -2,6 +2,7 @@
 using GDP_API.Data;
 using GDP_API.Models;
 using GDP_API.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,14 +26,14 @@ namespace GDP_API.Controllers
         _service = service;
     }
 
-    [HttpGet("All")]
+    [HttpGet("All"), Authorize()]
     public async Task<IActionResult> GetAllUsers() 
     {
         var users = await _service.GetAllUsers();
         return Ok(users);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}"),Authorize()]
     public async Task<IActionResult> GetUser(int id)
     {
         var user = await _service.GetUser(id);
@@ -42,7 +43,7 @@ namespace GDP_API.Controllers
         }
         return Ok(user);
     }
-    [HttpGet("email/{email}")]
+    [HttpGet("email/{email}"), Authorize()]
     public async Task<IActionResult> GetUserByEmail(string email)
     {   
     var user = await _service.GetUserByEmail(email);
