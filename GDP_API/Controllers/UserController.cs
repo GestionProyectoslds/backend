@@ -42,12 +42,36 @@ namespace GDP_API.Controllers
         }
         return Ok(user);
     }
+    [HttpGet("email/{email}")]
+    public async Task<IActionResult> GetUserByEmail(string email)
+    {   
+    var user = await _service.GetUserByEmail(email);
+
+    if (user == null)
+    {
+        return NotFound();
+    }
+
+    return Ok(user);
+    }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(UserDTO request)
+    public async Task<IActionResult> Register(RegisterDTO request)
     {
         var user = await _service.Register(request);
         return Ok(user);
+    }
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(EmailLoginDTO request)
+    {
+        var token = await _service.Login(request.Email, request.Password);
+
+        if (token == null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(new { Token = token });
     }
 }
 }

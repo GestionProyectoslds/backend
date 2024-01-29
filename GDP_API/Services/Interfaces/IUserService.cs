@@ -7,5 +7,8 @@ public interface IUserService
 {
     Task<List<User>> GetAllUsers();
     Task<User> GetUser(int id);
-    Task<User> Register(UserDTO request);
+    Task<User> GetUserByEmail(string email);
+    Task<User> Register(RegisterDTO request);
+    Task<string> Login(string email, string password);
+
 }
