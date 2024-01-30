@@ -21,9 +21,9 @@ public class ExpertUserController : ControllerBase
     }
 
     [HttpPost("register")]
-    public IActionResult Register(ExpertUserRegistrationDto expertUser)
+    public async Task<IActionResult> Register(ExpertUserRegistrationDto expertUser)
     {
-        _service.RegisterExpertUser(expertUser);
+        await _service.RegisterExpertUser(expertUser);
         return Ok(expertUser);
     }
 

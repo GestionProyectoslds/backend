@@ -1,50 +1,53 @@
 using GDP_API.Models;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 
-public class ExpertUserService : IExpertUserService
+public class ExpertUserService: IExpertUserService
 {
-    private readonly IExpertUserRepository _repository;
-    private readonly IUserRepository _userRepo;
-    
-    private readonly ILogger<ExpertUserService> _logger;
+    private readonly IUserRepository _userRepository;
+    private readonly IExpertUserRepository _expertUserRepository;
 
-    public ExpertUserService(IExpertUserRepository repository, IUserRepository userRepo, ILogger<ExpertUserService> logger)
+    public ExpertUserService(IUserRepository userRepository, IExpertUserRepository expertUserRepository)
     {
-        _repository = repository;
-        _userRepo = userRepo;
-        _logger = logger;
+        _userRepository = userRepository;
+        _expertUserRepository = expertUserRepository;
     }
 
-    public async Task<ExpertUser> RegisterExpertUser(ExpertUserRegistrationDto registrationDTO)
+    public async Task RegisterExpertUser(ExpertUserRegistrationDto expertUserDto)
     {
-        string passwordHash = BCrypt.Net.BCrypt.HashPassword(registrationDTO.UserDTO.Password);
-
-        User registeredUser = new User 
-        { 
-            Name = registrationDTO.UserDTO.Name,
-            Surname = registrationDTO.UserDTO.Surname,
-            Email = registrationDTO.UserDTO.Email, 
-            PhoneNumber = registrationDTO.UserDTO.PhoneNumber,
-            Password = passwordHash,
-            TermsAccepted = registrationDTO.UserDTO.TermsAccepted,
-            CreatedDate = DateTime.UtcNow,
-            UserTypeId = GDP_API.UserType.Normal
-        };
-
-        var user = await _userRepo.AddUser(registeredUser);
-
-        ExpertUser expertUser = new ExpertUser
+         string passwordHash = BCrypt.Net.BCrypt.HashPassword(expertUserDto.UserDTO.Password);
+       
+        // Build and register User
+        var user = new User
         {
-            UserId = user.Id,
-            User = user,
-            Address = registrationDTO.Address,
-            City = registrationDTO.City,
-            State = registrationDTO.State,
-            Country = registrationDTO.Country,
-            EducationLevel = registrationDTO.EducationLevel
+            // Assuming UserRegistrationDTO has properties that match User
+             Name = expertUserDto.UserDTO.Name,
+        Surname = expertUserDto.UserDTO.Surname,
+        Email = expertUserDto.UserDTO.Email, 
+        PhoneNumber = expertUserDto.UserDTO.PhoneNumber,
+        Password = passwordHash,
+        // Restore = request.Restore,
+        // Confirmed = request.Confirmed,
+        // Token = request.Token,
+        TermsAccepted = expertUserDto.UserDTO.TermsAccepted,
+        CreatedDate = DateTime.UtcNow,
+        UserTypeId = GDP_API.UserType.Expert
+            // Add other properties as needed
         };
+        var registeredUser = await _userRepository.AddUser(user);
 
-        return await _repository.Add(expertUser);
+        // Build and register ExpertUser
+        var expertUser = new ExpertUser
+        {
+            UserId = registeredUser.Id,
+            Address = expertUserDto.Address,
+            City = expertUserDto.City,
+            State = expertUserDto.State,
+            Country = expertUserDto.Country,
+            EducationLevel = expertUserDto.EducationLevel,
+            LearningMethod = expertUserDto.LearningMethod,
+            CVPath = expertUserDto.CVPath,
+            LinkedInURI = expertUserDto.LinkedInURI,
+            // Add other properties as needed
+        };
+        await _expertUserRepository.Add(expertUser);
     }
 }
