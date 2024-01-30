@@ -15,7 +15,7 @@
         // public string Token { get; set; } = string.Empty;
         public bool TermsAccepted { get; set; }
         public DateTime CreatedDate { get; set; }
-        public int UserTypeId { get; set; }
+        public UserType UserTypeId { get; set; }
         //public UserType UserType { get; set; }
 
     }

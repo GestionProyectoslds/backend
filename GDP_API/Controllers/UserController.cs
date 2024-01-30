@@ -26,14 +26,14 @@ namespace GDP_API.Controllers
         _service = service;
     }
 
-    [HttpGet("All"), Authorize()]
+    [HttpGet("All"), Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllUsers() 
     {
         var users = await _service.GetAllUsers();
         return Ok(users);
     }
 
-    [HttpGet("{id}"),Authorize()]
+    [HttpGet("{id}"),Authorize(Roles = "Normal, Expert")]
     public async Task<IActionResult> GetUser(int id)
     {
         var user = await _service.GetUser(id);
@@ -43,7 +43,7 @@ namespace GDP_API.Controllers
         }
         return Ok(user);
     }
-    [HttpGet("email/{email}"), Authorize()]
+    [HttpGet("/email/{email}"), Authorize()]
     public async Task<IActionResult> GetUserByEmail(string email)
     {   
     var user = await _service.GetUserByEmail(email);
@@ -57,7 +57,7 @@ namespace GDP_API.Controllers
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterDTO request)
+    public async Task<IActionResult> Register(UserRegistrationDTO request)
     {
         var user = await _service.Register(request);
         return Ok(user);

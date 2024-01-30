@@ -10,8 +10,6 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    // Add the missing using directive
-
     public async Task<List<User>> GetAllUsers()
     {
         return await _context.Users.ToListAsync();
@@ -27,7 +25,7 @@ public class UserRepository : IUserRepository
 
     public async Task<User> AddUser(User user)
     {
-        _context.Users.Add(user);
+        await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
         return user;
     }

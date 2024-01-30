@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using GDP_API.Models;
 using GDP_API.Models.DTOs;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -11,11 +10,12 @@ public class UserService : IUserService
 {
     private readonly IUserRepository _repository;
     private readonly IConfiguration _configuration;
-
-    public UserService(IUserRepository repository, IConfiguration configuration)
+    private readonly ILogger<UserService> _logger;
+    public UserService(IUserRepository repository, IConfiguration configuration, ILogger<UserService> logger)
     {
         _repository = repository;
         _configuration = configuration;
+        _logger = logger;
     }
 
     /// <summary>
@@ -38,24 +38,30 @@ public class UserService : IUserService
     }
 
 
-    public async Task<User> Register(RegisterDTO request)
+    public async Task<User> Register(UserRegistrationDTO registrationDTO)
     {
-        string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+        string passwordHash = BCrypt.Net.BCrypt.HashPassword(registrationDTO.Password);
+       
         User user = new User 
     { 
-        Name = request.Name,
-        Surname = request.Surname,
-        Email = request.Email, 
-        PhoneNumber = request.PhoneNumber,
+        Name = registrationDTO.Name,
+        Surname = registrationDTO.Surname,
+        Email = registrationDTO.Email, 
+        PhoneNumber = registrationDTO.PhoneNumber,
         Password = passwordHash,
         // Restore = request.Restore,
         // Confirmed = request.Confirmed,
         // Token = request.Token,
-        TermsAccepted = request.TermsAccepted,
-        CreatedDate = request.CreatedDate,
-        UserTypeId = request.UserTypeId
+        TermsAccepted = registrationDTO.TermsAccepted,
+        CreatedDate = DateTime.UtcNow,
+        UserTypeId = GDP_API.UserType.Normal
     };
-        return await _repository.AddUser(user);
+//     string userProperties = $"Name: {user.Name}, Surname: {user.Surname}, Email: {user.Email}, PhoneNumber: {user.PhoneNumber}, Password: {user.Password}, TermsAccepted: {user.TermsAccepted}, CreatedDate: {user.CreatedDate}, UserTypeId: {user.UserTypeId}";
+// _logger.LogInformation("User properties: {UserProperties}", userProperties);
+
+    var res = await _repository.AddUser(user);
+   
+        return res;
        
         
     }
@@ -74,7 +80,9 @@ public class UserService : IUserService
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, user.Id.ToString()) }),
+            Subject = new ClaimsIdentity(new[] {
+                 new Claim(ClaimTypes.Name, user.Id.ToString()),
+                 new Claim(ClaimTypes.Role, user.UserTypeId.ToString()) }),
             Expires = DateTime.UtcNow.AddDays(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };

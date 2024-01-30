@@ -8,7 +8,7 @@ public interface IUserService
     Task<List<User>> GetAllUsers();
     Task<User> GetUser(int id);
     Task<User> GetUserByEmail(string email);
-    Task<User> Register(RegisterDTO request);
+    Task<User> Register(UserRegistrationDTO request);
     Task<string> Login(string email, string password);
 
 }
