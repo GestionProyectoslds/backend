@@ -59,8 +59,15 @@ namespace GDP_API.Controllers
     [HttpPost("register")]
     public async Task<IActionResult> Register(UserRegistrationDTO request)
     {
+       try
+    {
         var user = await _service.Register(request);
         return Ok(user);
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new { message = ex.Message });
+    }
     }
     [HttpPost("login")]
     public async Task<IActionResult> Login(EmailLoginDTO request)

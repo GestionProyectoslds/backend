@@ -1,8 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using GDP_API;
 using GDP_API.Models;
 using GDP_API.Models.DTOs;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -38,10 +41,18 @@ public class UserService : IUserService
     }
 
 
-    public async Task<User> Register(UserRegistrationDTO registrationDTO)
+    public async Task<User> Register(UserRegistrationDTO registrationDTO,
+     UserType userType= UserType.Normal)
     {
-        string passwordHash = BCrypt.Net.BCrypt.HashPassword(registrationDTO.Password);
-       
+        try
+    {
+        // Check if a user with the same email already exists
+        var existingUser = await _repository.GetUserByEmail(registrationDTO.Email);
+        if (existingUser != null)
+        {
+            throw new Exception("An account with this email already exists.");
+        }
+         string passwordHash = BCrypt.Net.BCrypt.HashPassword(registrationDTO.Password);
         User user = new User 
     { 
         Name = registrationDTO.Name,
@@ -49,21 +60,25 @@ public class UserService : IUserService
         Email = registrationDTO.Email, 
         PhoneNumber = registrationDTO.PhoneNumber,
         Password = passwordHash,
-        // Restore = request.Restore,
-        // Confirmed = request.Confirmed,
-        // Token = request.Token,
         TermsAccepted = registrationDTO.TermsAccepted,
+        Token = Guid.NewGuid().ToString(),
         CreatedDate = DateTime.UtcNow,
-        UserTypeId = GDP_API.UserType.Normal
+        UserTypeId = userType
     };
-//     string userProperties = $"Name: {user.Name}, Surname: {user.Surname}, Email: {user.Email}, PhoneNumber: {user.PhoneNumber}, Password: {user.Password}, TermsAccepted: {user.TermsAccepted}, CreatedDate: {user.CreatedDate}, UserTypeId: {user.UserTypeId}";
-// _logger.LogInformation("User properties: {UserProperties}", userProperties);
+    //TODO - Send email confirmation
 
-    var res = await _repository.AddUser(user);
-   
-        return res;
+     return await _repository.AddUser(user);
+    }
+    catch (DbUpdateException ex)
+    {
+        if (ex.InnerException != null && ex.InnerException is SqlException sqlEx && (sqlEx.Number == 2601 || sqlEx.Number == 2627))
+        {
+            throw new Exception("An account with this email already exists.");
+        }
+        throw;
+    }
        
-        
+         
     }
     public async Task<string> Login(string email, string password)
     {
@@ -96,4 +111,5 @@ public class UserService : IUserService
     {
         return await _repository.GetUserByEmail(email);
     }
+    
 }

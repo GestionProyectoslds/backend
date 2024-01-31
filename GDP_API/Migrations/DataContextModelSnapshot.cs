@@ -67,7 +67,8 @@ namespace GDP_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("ExpertUsers");
                 });
@@ -85,7 +86,7 @@ namespace GDP_API.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -111,14 +112,17 @@ namespace GDP_API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("GDP_API.Models.ExpertUser", b =>
                 {
                     b.HasOne("GDP_API.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .WithOne()
+                        .HasForeignKey("GDP_API.Models.ExpertUser", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
