@@ -34,7 +34,7 @@ public class EmailService : IEmailService
     request.AddParameter("from", $"GDP <mailgun@{domain}>");
     request.AddParameter("to", $"{to}");
     request.AddParameter("subject", $"{subject}");
-    request.AddParameter("text", $"{text}");
+    request.AddParameter("text", $"{text} _");
     request.Method = Method.Post;
 
     var response = await client.ExecuteAsync(request);
