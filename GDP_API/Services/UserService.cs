@@ -12,13 +12,16 @@ using Microsoft.IdentityModel.Tokens;
 public class UserService : IUserService
 {
     private readonly IUserRepository _repository;
+    private readonly IExpertUserRepository _expertRepository;
     private readonly IConfiguration _configuration;
     private readonly ILogger<UserService> _logger;
-    public UserService(IUserRepository repository, IConfiguration configuration, ILogger<UserService> logger)
+    public UserService(IUserRepository repository, 
+    IConfiguration configuration, ILogger<UserService> logger, IExpertUserRepository expertRepository)
     {
         _repository = repository;
         _configuration = configuration;
         _logger = logger;
+        _expertRepository = expertRepository;
     }
 
     /// <summary>
@@ -41,8 +44,7 @@ public class UserService : IUserService
     }
 
 
-    public async Task<User> Register(UserRegistrationDTO registrationDTO,
-     UserType userType= UserType.Normal)
+    public async Task<User> Register(UserRegistrationDTO registrationDTO)
     {
         try
     {
@@ -54,7 +56,7 @@ public class UserService : IUserService
         }
          string passwordHash = BCrypt.Net.BCrypt.HashPassword(registrationDTO.Password);
         User user = new User 
-    { 
+        { 
         Name = registrationDTO.Name,
         Surname = registrationDTO.Surname,
         Email = registrationDTO.Email, 
@@ -63,8 +65,8 @@ public class UserService : IUserService
         TermsAccepted = registrationDTO.TermsAccepted,
         Token = Guid.NewGuid().ToString(),
         CreatedDate = DateTime.UtcNow,
-        UserTypeId = userType
-    };
+        UserTypeId = registrationDTO.UserTypeId
+        };
     //TODO - Send email confirmation
 
      return await _repository.AddUser(user);
@@ -79,6 +81,24 @@ public class UserService : IUserService
     }
        
          
+    }
+    public async Task<ExpertUser> RegisterExpert(UserRegistrationDTO registrationDTO){
+        try{
+            var user = await Register(registrationDTO);
+            ExpertUser expert = new ExpertUser
+            {
+                UserId = user.Id,
+                User = user,
+                Experience = registrationDTO.Experience ?? "",
+                EducationLevel = registrationDTO.EducationLevel ?? "",
+                CVPath= registrationDTO.CVPath ?? "",
+                LinkedInURI = registrationDTO.LinkedInURI ?? ""
+            };
+        return await _expertRepository.Add(expert);
+        }catch(Exception){
+            throw new Exception("Something went wrong. Please wait a little and try again.");
+        }
+
     }
     public async Task<string> Login(string email, string password)
     {

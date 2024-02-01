@@ -42,7 +42,7 @@ builder.Services.AddDbContext<DataContext>(options => {
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IExpertUserRepository, ExpertUserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IExpertUserService, ExpertUserService>();
+// builder.Services.AddScoped<IExpertUserService, ExpertUserService>();
 
 
 var app = builder.Build();

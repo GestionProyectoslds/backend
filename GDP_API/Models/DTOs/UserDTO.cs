@@ -7,10 +7,21 @@
         public required string Email { get; set; } = string.Empty;
         public required string PhoneNumber { get; set; } = string.Empty;
         public required string Password { get; set; } = string.Empty;
-        // public required bool Restore { get; set; }
-        // public required bool Confirmed { get; set; } 
-        // public required string Token { get; set; } = string.Empty;
+        public string AddressLine1 { get; set; } = string.Empty;
+        public string AddressLine2 { get; set; } = string.Empty;
+        public string ZipCode { get; set; } = string.Empty;
+
+        public string City { get; set; } = string.Empty;
+
+        public string State { get; set; } = string.Empty;
+
+        public string Country { get; set; } = string.Empty;
         public bool TermsAccepted { get; set; }
+        public UserType UserTypeId { get; set; } 
+        public string? Experience { get; set; } = string.Empty;
+        public string? EducationLevel { get; set; } = string.Empty;
+        public string? CVPath { get; set; } = string.Empty; // Para almacenar la ruta del archivo CV
+        public string? LinkedInURI { get; set; } = string.Empty;
     }
     public class EmailLoginDTO
     {
