@@ -97,7 +97,7 @@ public class UserService : IUserService
                 CVPath= registrationDTO.CVPath ?? "",
                 LinkedInURI = registrationDTO.LinkedInURI ?? ""
             };
-            await _emailService.SendEmailAsync($"{user.Email}", "Welcome to GDP","");
+            await _emailService.SendEmailAsync($"{user.Email}", "Welcome to GDP"," ");
         return await _expertRepository.Add(expert);
         }catch(Exception){
             throw ;
