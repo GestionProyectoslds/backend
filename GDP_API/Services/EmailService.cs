@@ -1,12 +1,13 @@
+using System;
+using System.IO;
+using System.Text;
+using RestSharp;
+using RestSharp.Authenticators;
 
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using MimeKit;
-using MimeKit.Text;
 
 
 
-    public class EmailService : IEmailService
+public class EmailService : IEmailService
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<EmailService> _logger;
@@ -17,28 +18,29 @@ using MimeKit.Text;
             _logger = logger;
         }
 
-        public async Task SendEmailAsync(string to, string subject, string html="<h1>Test</h1>")
-        {
-            var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse(_configuration["EmailSettings:From"]));
-            email.To.Add(MailboxAddress.Parse(to));
-            email.Subject = subject;
-            email.Body = new TextPart("plain") { Text = html };
-            
+        public async Task SendEmailAsync(string to, string subject, string text="")
+{
+    
+     // Add this line
+    var options = new RestClientOptions("https://api.mailgun.net/v3");
+    options.Authenticator = new HttpBasicAuthenticator("api", _configuration["EmailSettings:MailGunApiKey"]!);
+    var domain = _configuration["EmailSettings:MailGunDomain"];
+    var client = new RestClient(options){
+        
+    };
+      var request = new RestRequest();
+    request.AddParameter("domain", domain!, ParameterType.UrlSegment);
+    request.Resource = "{domain}/messages";
+    request.AddParameter("from", $"GDP <mailgun@{domain}>");
+    request.AddParameter("to", $"{to}");
+    request.AddParameter("subject", $"{subject}");
+    request.AddParameter("text", $"{text}");
+    request.Method = Method.Post;
 
-            using var smtp = new SmtpClient();
-            try
-            {
-                _logger.LogDebug("Started sending email");
-                await smtp.ConnectAsync(_configuration["EmailSettings:Host"], _configuration.GetValue<int>("EmailSettings:Port"), SecureSocketOptions.StartTls);
-                await smtp.AuthenticateAsync(_configuration["EmailSettings:Username"], _configuration["EmailSettings:Password"]);
-                await smtp.SendAsync(email);
-                await smtp.DisconnectAsync(true);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error sending email.");
-                throw; 
-            }
-        }
+    var response = await client.ExecuteAsync(request);
+    _logger.LogInformation(response.Content);
+
+  
+}
+        
     }
