@@ -63,9 +63,9 @@ namespace GDP_API.Controllers
     {
         if (request.UserTypeId == UserType.Expert)
         {
-            return Ok(await _service.RegisterExpert(request)+ "Expert User Registered");
+            return Ok($"{(await _service.RegisterExpert(request)).User} Expert User Registered");
         }
-        return Ok(await _service.Register(request)+ "User Registered");
+        return Ok($"{(await _service.RegisterExpert(request)).User} User Registered");
     }
     catch (Exception ex)
     {

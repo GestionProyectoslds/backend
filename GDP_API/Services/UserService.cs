@@ -15,13 +15,16 @@ public class UserService : IUserService
     private readonly IExpertUserRepository _expertRepository;
     private readonly IConfiguration _configuration;
     private readonly ILogger<UserService> _logger;
+    private readonly IEmailService _emailService;
     public UserService(IUserRepository repository, 
-    IConfiguration configuration, ILogger<UserService> logger, IExpertUserRepository expertRepository)
+    IConfiguration configuration, ILogger<UserService> logger,
+     IExpertUserRepository expertRepository, IEmailService emailService)
     {
         _repository = repository;
         _configuration = configuration;
         _logger = logger;
         _expertRepository = expertRepository;
+        _emailService = emailService;
     }
 
     /// <summary>
@@ -94,9 +97,10 @@ public class UserService : IUserService
                 CVPath= registrationDTO.CVPath ?? "",
                 LinkedInURI = registrationDTO.LinkedInURI ?? ""
             };
+            await _emailService.SendEmailAsync("montoyasotodanielxd@gmail.com", "Welcome to GDP","");
         return await _expertRepository.Add(expert);
         }catch(Exception){
-            throw new Exception("Something went wrong. Please wait a little and try again.");
+            throw ;
         }
 
     }
