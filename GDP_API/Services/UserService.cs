@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using GDP_API;
 using GDP_API.Models;
 using GDP_API.Models.DTOs;
 using Microsoft.Data.SqlClient;

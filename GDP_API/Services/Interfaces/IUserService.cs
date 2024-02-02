@@ -1,6 +1,3 @@
-
-
-using GDP_API;
 using GDP_API.Models;
 using GDP_API.Models.DTOs;
 

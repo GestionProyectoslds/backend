@@ -6,7 +6,6 @@ namespace GDP_API.Models
     {
         public UserRegistrationDTO UserDTO { get; set; } 
         public int UserId { get; set; }
-
         public string Experience { get; set; } = string.Empty;
         public string EducationLevel { get; set; } = string.Empty;
         public string CVPath { get; set; } = string.Empty; // Para almacenar la ruta del archivo CV

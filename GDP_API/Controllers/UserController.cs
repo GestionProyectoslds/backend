@@ -1,88 +1,79 @@
-﻿ // Add the missing using directive
-using GDP_API.Data;
-using GDP_API.Models;
-using GDP_API.Models.DTOs;
+﻿using GDP_API.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-
 
 namespace GDP_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
-{
-
-    private readonly IUserService _service;
-
-    public UserController(IUserService service)
     {
-        _service = service;
-    }
+        private readonly IUserService _service;
 
-    [HttpGet("All"), Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAllUsers() 
-    {
-        var users = await _service.GetAllUsers();
-        return Ok(users);
-    }
-
-    [HttpGet("{id}"),Authorize(Roles = "Normal, Expert")]
-    public async Task<IActionResult> GetUser(int id)
-    {
-        var user = await _service.GetUser(id);
-        if(user is null)
+        public UserController(IUserService service)
         {
-            return NotFound("User not found");
-        }
-        return Ok(user);
-    }
-    [HttpGet("/email/{email}"), Authorize()]
-    public async Task<IActionResult> GetUserByEmail(string email)
-    {   
-    var user = await _service.GetUserByEmail(email);
-
-    if (user == null)
-    {
-        return NotFound();
-    }
-
-    return Ok(user);
-    }
-
-    [HttpPost("register")]
-    public async Task<IActionResult> Register(UserRegistrationDTO request)
-    {
-       try
-    {
-        if (request.UserTypeId == UserType.Expert)
-        {
-            return Ok($"{(await _service.RegisterExpert(request)).User} Expert User Registered");
-        }
-        return Ok($"{(await _service.RegisterExpert(request)).User} User Registered");
-    }
-    catch (Exception ex)
-    {
-        return BadRequest(new { message = ex.Message });
-    }
-    }
-    [HttpPost("login")]
-    public async Task<IActionResult> Login(EmailLoginDTO request)
-    {
-        var token = await _service.Login(request.Email, request.Password);
-
-        if (token == null)
-        {
-            return Unauthorized();
+            _service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
-        return Ok(new { Token = token });
+        [HttpGet(Name="All")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _service.GetAllUsers();
+            return Ok(users);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Normal, Expert")]
+        public async Task<IActionResult> GetUser(int id)
+        {
+            var user = await _service.GetUser(id);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            return Ok(user);
+        }
+
+        [HttpGet("email/{email}")]
+        [Authorize]
+        public async Task<IActionResult> GetUserByEmail(string email)
+        {
+            var user = await _service.GetUserByEmail(email);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(UserRegistrationDTO request)
+        {
+            try
+            {
+                var registrationResult = await _service.RegisterExpert(request);
+                var userType = request.UserTypeId == UserType.Expert ? "Expert " : "";
+                return Ok($"{registrationResult.User} {userType}User Registered");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Registration failed", error = ex.Message });
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(EmailLoginDTO request)
+        {
+            var token = await _service.Login(request.Email, request.Password);
+            if (token == null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(new { Token = token });
+        }
     }
-}
 }

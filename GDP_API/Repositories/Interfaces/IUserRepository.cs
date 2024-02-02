@@ -1,5 +1,4 @@
 using GDP_API.Models;
-using GDP_API.Models.DTOs;
 
 public interface IUserRepository
 {
