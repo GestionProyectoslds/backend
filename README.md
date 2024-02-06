@@ -4,7 +4,7 @@ This is a .NET project. Follow the instructions below to run the project and cre
 
 ## Prerequisites
 
-- .NET Core 3.1 or later
+- .NET Core 8
 - Entity Framework Core
 - SQL Server 2022
 - SSMS 2019 (recommended)
@@ -22,7 +22,8 @@ dotnet run
 
 ## Creating Migrations
 
-You'll need to create and run a migration to run this project in a development environment
+This needs a database connection to function, you may need to create and run a migration to run this project in a development environment.
+This can be done via the dotnet package manager console or through dotnet ef tools in your OS' Command Line Interface
 
 ### dotnet package manager
 
