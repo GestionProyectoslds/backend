@@ -57,6 +57,9 @@ public class UserService : IUserService
             throw new Exception("An account with this email already exists.");
         }
          string passwordHash = BCrypt.Net.BCrypt.HashPassword(registrationDTO.Password);
+         string token = Guid.NewGuid().ToString();
+         string tokenHash = BCrypt.Net.BCrypt.HashPassword(token);
+        const string emailMessage = "You have successfully registered. Please confirm your email address to complete the registration process.";
         User user = new User 
         { 
         Name = registrationDTO.Name,
@@ -65,12 +68,16 @@ public class UserService : IUserService
         PhoneNumber = registrationDTO.PhoneNumber,
         Password = passwordHash,
         TermsAccepted = registrationDTO.TermsAccepted,
-        Token = Guid.NewGuid().ToString(),
+        Token = tokenHash,
         CreatedDate = DateTime.UtcNow,
         UserTypeId = registrationDTO.UserTypeId
         };
-    //TODO - Send email confirmation
-
+    
+        //TODO (maybe) - Change token so it can be verified without storing it
+        //TODO - Change the URL so it adapts to the environment
+        
+            await _emailService.SendEmailAsync("montoyasotodanielxd@gmail.com", "Welcome to GDP",
+            $" <a href='https://localhost:5153/api/User/confirmemail?email={user.Email}&token={token}'>Confirm Email</a> a");
      return await _repository.AddUser(user);
     }
     catch (DbUpdateException ex)
@@ -86,6 +93,7 @@ public class UserService : IUserService
     }
     public async Task<ExpertUser> RegisterExpert(UserRegistrationDTO registrationDTO){
         try{
+            
             var user = await Register(registrationDTO);
             ExpertUser expert = new ExpertUser
             {
@@ -96,7 +104,7 @@ public class UserService : IUserService
                 CVPath= registrationDTO.CVPath ?? "",
                 LinkedInURI = registrationDTO.LinkedInURI ?? ""
             };
-            await _emailService.SendEmailAsync($"{user.Email}", "Welcome to GDP"," ");
+            
         return await _expertRepository.Add(expert);
         }catch(Exception){
             throw ;
@@ -134,5 +142,9 @@ public class UserService : IUserService
     {
         return await _repository.GetUserByEmail(email);
     }
-    
+    public async Task ConfirmEmail(string email, string token)
+    {
+
+        await _repository.ConfirmEmail(email, token);
+    }
 }

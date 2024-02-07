@@ -9,5 +9,5 @@ public interface IUserService
     Task<User> Register(UserRegistrationDTO request);
     Task<ExpertUser> RegisterExpert(UserRegistrationDTO request);
     Task<string> Login(string email, string password);
-
+    Task ConfirmEmail(string email, string token);
 }

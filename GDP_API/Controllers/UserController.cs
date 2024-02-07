@@ -48,7 +48,19 @@ namespace GDP_API.Controllers
 
             return Ok(user);
         }
-
+        [HttpGet("email/confirm")]
+        public async Task<IActionResult> ConfirmEmail(string email, string token)
+        {
+            try
+            {
+                await _service.ConfirmEmail(email, token);
+                return Ok("Email confirmed");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Email confirmation failed", error = ex.Message });
+            }
+        }
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegistrationDTO request)
         {
