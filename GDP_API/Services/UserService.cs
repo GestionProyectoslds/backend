@@ -59,7 +59,6 @@ public class UserService : IUserService
          string passwordHash = BCrypt.Net.BCrypt.HashPassword(registrationDTO.Password);
          string token = Guid.NewGuid().ToString();
          string tokenHash = BCrypt.Net.BCrypt.HashPassword(token);
-        const string emailMessage = "You have successfully registered. Please confirm your email address to complete the registration process.";
         User user = new User 
         { 
         Name = registrationDTO.Name,
@@ -72,13 +71,11 @@ public class UserService : IUserService
         CreatedDate = DateTime.UtcNow,
         UserTypeId = registrationDTO.UserTypeId
         };
-    
         //TODO (maybe) - Change token so it can be verified without storing it
         //TODO - Change the URL so it adapts to the environment
-        
-            await _emailService.SendEmailAsync("montoyasotodanielxd@gmail.com", "Welcome to GDP",
-            $" <a href='https://localhost:5153/api/User/confirmemail?email={user.Email}&token={token}'>Confirm Email</a> a");
-     return await _repository.AddUser(user);
+        await _emailService.SendEmailAsync($"{user.Email}", "Welcome to GDP",
+            $" <a href='http://localhost:5153/api/User/email/confirm?email={user.Email}&token={token}'>Confirm Email</a> a");
+        return await _repository.AddUser(user);
     }
     catch (DbUpdateException ex)
     {
@@ -144,7 +141,27 @@ public class UserService : IUserService
     }
     public async Task ConfirmEmail(string email, string token)
     {
-
-        await _repository.ConfirmEmail(email, token);
+        var user = await _repository.GetUserByEmail(email);
+        
+       if(user != null)
+        {  
+            
+            if(user.Confirmed)
+            {
+                throw new Exception("Email already confirmed");
+            }
+            if(BCrypt.Net.BCrypt.Verify(token, user.Token))
+            {
+            await _repository.ConfirmEmail(user);
+            return;
+            }
+        }
+        if (user == null)
+        {
+            throw new Exception("User not found");
+            
+        }
+            throw new Exception("Invalid token");
+            
     }
 }

@@ -32,28 +32,12 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
         return user;
     }
-     public async Task ConfirmEmail(string email, string token)
+     public async Task ConfirmEmail(User user)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        //check the user token with the token in the database and confirm the hash if they match
-        if(user!=null){
-            _logger.LogInformation($"{user.Token} {token}");
-            _logger.LogInformation($"{BCrypt.Net.BCrypt.Verify(token, user.Token)}");
-        }
-        if (user != null && BCrypt.Net.BCrypt.Verify(token, user.Token))
-        {
+
             user.Confirmed = true;
             user.Token = "";
-            await _context.SaveChangesAsync();
-        }
-           if(user == null)
-           {
-               throw new Exception("User not found");
-           }
-           if(user.Token != token)
-           {
-               throw new Exception("Invalid token");
-           }
-        
+            await _context.SaveChangesAsync();         
     }
-}
+    }
+    
