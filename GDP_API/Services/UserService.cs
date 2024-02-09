@@ -74,7 +74,7 @@ public class UserService : IUserService
         //TODO (maybe) - Change token so it can be verified without storing it
         //TODO - Change the URL so it adapts to the environment
         await _emailService.SendEmailAsync($"{user.Email}", "Welcome to GDP",
-            $" <a href='http://localhost:5153/api/User/email/confirm?email={user.Email}&token={token}'>Confirm Email</a> a");
+            $" <a href='http://localhost:5153/api/User/email/confirm?email={user.Email}&token={token}'>Confirm Email</a>");
         return await _repository.AddUser(user);
     }
     catch (DbUpdateException ex)
