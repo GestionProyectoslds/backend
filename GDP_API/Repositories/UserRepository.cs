@@ -25,7 +25,6 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
     }
-
     public async Task<User> AddUser(User user)
     {
         await _context.Users.AddAsync(user);
@@ -39,5 +38,26 @@ public class UserRepository : IUserRepository
             user.Token = "";
             await _context.SaveChangesAsync();         
     }
+
+    public async Task SetOtp(User user, string otp)
+    {
+        if(user.Confirmed){
+            user.Token = otp;
+            await _context.SaveChangesAsync();
+            return;
+        }
+        throw new Exception("User not confirmed");
     }
+
+    public async Task ResetOtp(User user)
+    {
+        if(user.Confirmed){
+            user.Token = string.Empty;
+            _logger.LogInformation("OTP reset");
+            await _context.SaveChangesAsync();
+            return;
+        }
+        throw new Exception("User not confirmed");
+    }
+}
     

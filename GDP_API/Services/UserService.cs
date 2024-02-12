@@ -108,15 +108,22 @@ public class UserService : IUserService
         }
 
     }
-    public async Task<string> Login(string email, string password)
+    public async Task<string> Login(string email, string password, bool otp = false)
     {
         var user = await _repository.GetUserByEmail(email);
-
-        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password))
+        
+        if (user == null )
         {
             return null;
         }
-
+        if(!CheckHash(user, password, otp))
+        {
+            throw new Exception("Invalid credentials");
+        }
+        if(!user.Confirmed)
+        {
+            throw new Exception("Email not confirmed");
+        }
         var tokenHandler = new JwtSecurityTokenHandler();
         //TODO - Use Azure keystore for production
         var key = Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value!);
@@ -129,12 +136,13 @@ public class UserService : IUserService
             Expires = DateTime.UtcNow.AddDays(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
-
+        if(otp)
+        {
+          await _repository.ResetOtp(user);
+        }
         var token = tokenHandler.CreateToken(tokenDescriptor);
-
         return tokenHandler.WriteToken(token);
     }
-
     public async Task<User> GetUserByEmail(string email)
     {
         return await _repository.GetUserByEmail(email);
@@ -163,5 +171,32 @@ public class UserService : IUserService
         }
             throw new Exception("Invalid token");
             
+    }
+    public async Task<string>  RequestOtp(string email)
+    {
+        var user = await _repository.GetUserByEmail(email);
+        if(user == null)
+        {
+            throw new Exception("User not found");
+        }
+        if(user.Confirmed)
+        {
+            var otpValue = new Random().Next(100000, 999999).ToString();
+            var otp = BCrypt.Net.BCrypt.HashPassword(otpValue);
+            await _repository.SetOtp(user, otp);
+            await _emailService.SendEmailAsync($"{user.Email}", "GDP - OTP",
+            $"Your OTP is: {otpValue}");
+            return $"OTP sent to {user.Email}";
+        }
+        throw new Exception("User not confirmed");
+    }
+    private bool CheckHash(User user, string password, bool otp = false)
+    {
+        if(otp && string.IsNullOrEmpty(user.Token))
+        {
+            return false;
+        }
+        return !otp ?  BCrypt.Net.BCrypt.Verify(password, user.Password)
+        : BCrypt.Net.BCrypt.Verify(password, user.Token);
     }
 }

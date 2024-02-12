@@ -35,8 +35,7 @@ namespace GDP_API.Controllers
 
             return Ok(user);
         }
-
-        [HttpGet("email/{email}")]
+        [HttpGet("email/{email}")] 
         [Authorize]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
@@ -58,6 +57,7 @@ namespace GDP_API.Controllers
             }
             catch (Exception ex)
             {
+               
                 return BadRequest(new { message = "Email confirmation failed", error = ex.Message });
             }
         }
@@ -77,15 +77,36 @@ namespace GDP_API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(EmailLoginDTO request)
+        public async Task<IActionResult> Login(EmailLoginDTO request, bool otp= false)
         {
-            var token = await _service.Login(request.Email, request.Password);
-            if (token == null)
-            {
-                return Unauthorized();
+            try{
+                var token = await _service.Login(request.Email, request.Password, otp);
+                if (token == null)
+                {
+                    return BadRequest(new { message = "Invalid credentials" });
+                }
+                return Ok(new { token });
             }
-
-            return Ok(new { Token = token });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Login failed", error = ex.Message });
+            
         }
+        }
+        [HttpPost("request-otp")]
+        public async Task<IActionResult> RequestOtp(string email)
+    {
+        try
+        {
+            await _service.RequestOtp(email);
+            return Ok(new { message = "OTP sent." });
+        }
+        catch (Exception ex)
+        {
+            // Log the exception
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+            
     }
 }
