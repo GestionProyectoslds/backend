@@ -9,4 +9,5 @@ public interface IUserRepository
     Task ConfirmEmail(User user);
     Task SetOtp(User user, string otp); 
     Task ResetOtp(User user);
+    Task ResetPassword(User user, string password);
 }

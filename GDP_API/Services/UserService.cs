@@ -44,8 +44,6 @@ public class UserService : IUserService
     {
         return await _repository.GetUser(id);
     }
-
-
     public async Task<User> Register(UserRegistrationDTO registrationDTO)
     {
         try
@@ -71,7 +69,6 @@ public class UserService : IUserService
         CreatedDate = DateTime.UtcNow,
         UserTypeId = registrationDTO.UserTypeId
         };
-        //TODO (maybe) - Change token so it can be verified without storing it
         //TODO - Change the URL so it adapts to the environment
         await _emailService.SendEmailAsync($"{user.Email}", "Welcome to GDP",
             $" <a href='http://localhost:5153/api/User/email/confirm?email={user.Email}&token={token}'>Confirm Email</a>");
@@ -84,9 +81,7 @@ public class UserService : IUserService
             throw new Exception("An account with this email already exists.");
         }
         throw;
-    }
-       
-         
+    }            
     }
     public async Task<ExpertUser> RegisterExpert(UserRegistrationDTO registrationDTO){
         try{
@@ -199,4 +194,28 @@ public class UserService : IUserService
         return !otp ?  BCrypt.Net.BCrypt.Verify(password, user.Password)
         : BCrypt.Net.BCrypt.Verify(password, user.Token);
     }
+    public async Task ResetPassword(string jwt, string newPassword, string confirm)
+{   
+    if(newPassword != confirm)
+    {
+        throw new Exception("Passwords do not match");
+    }
+    // Extract the user ID from the JWT
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var jwtToken = tokenHandler.ReadJwtToken(jwt);
+    //TODO - Research if claim type can be changed to use a .net constant instead of a string
+    //  ClaimTypes.NameIdentifier and  ClaimTypes.Name do not work
+    int userIdFromJwt = int.Parse(jwtToken.Claims.First(claim => claim.Type == "unique_name").Value);
+
+    // Get the user from the database
+    var user = await _repository.GetUser(userIdFromJwt);
+
+    if (user == null)
+    {
+        throw new Exception("User not found.");
+    }
+    string passwordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+    // Reset the password
+    await _repository.ResetPassword(user, passwordHash);
+}
 }

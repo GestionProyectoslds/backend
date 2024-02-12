@@ -1,4 +1,5 @@
-﻿using GDP_API.Models.DTOs;
+﻿using System.Security.Claims;
+using GDP_API.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,12 +10,13 @@ namespace GDP_API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _service;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(IUserService service)
+        public UserController(IUserService service, ILogger<UserController> logger)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-
         [HttpGet(Name="All")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUsers()
@@ -22,9 +24,8 @@ namespace GDP_API.Controllers
             var users = await _service.GetAllUsers();
             return Ok(users);
         }
-
         [HttpGet("{id}")]
-        [Authorize(Roles = "Normal, Expert")]
+        [Authorize]
         public async Task<IActionResult> GetUser(int id)
         {
             var user = await _service.GetUser(id);
@@ -75,7 +76,6 @@ namespace GDP_API.Controllers
                 return BadRequest(new { message = "Registration failed", error = ex.Message });
             }
         }
-
         [HttpPost("login")]
         public async Task<IActionResult> Login(EmailLoginDTO request, bool otp= false)
         {
@@ -93,7 +93,7 @@ namespace GDP_API.Controllers
             
         }
         }
-        [HttpPost("request-otp")]
+        [HttpPost("requestOtp")]
         public async Task<IActionResult> RequestOtp(string email)
     {
         try
@@ -107,6 +107,27 @@ namespace GDP_API.Controllers
             return BadRequest(new { message = ex.Message });
         }
     }
-            
+        [Authorize]
+        [HttpPost("resetPassword")]
+        public async Task<IActionResult> ResetPassword(PasswordResetDTO newPassword)
+        {
+        try
+        {
+        // Get the user's ID from the JWT
+        var jwt = Request.Headers["Authorization"].ToString().Replace("bearer ", "");
+        var userId = User.FindFirstValue(ClaimTypes.Name);
+        if (userId == null)
+        {
+            return BadRequest(new { message = "Invalid user" });
+        }
+        // Reset the password
+        await _service.ResetPassword(jwt, newPassword.NewPassword, newPassword.ConfirmPassword);
+        return Ok(new { message = "Password reset successful." });
+        }
+        catch (Exception ex)
+        {
+        return BadRequest(new { message = $"{ex.Message}" });
+    }
+}
     }
 }

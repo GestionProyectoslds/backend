@@ -36,9 +36,7 @@ public class EmailService : IEmailService
     request.Method = Method.Post;
 
     var response = await client.ExecuteAsync(request);
-    _logger.LogInformation(response.Content);
-
-  
+   
 }
         
     }

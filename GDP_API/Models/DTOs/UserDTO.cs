@@ -17,7 +17,7 @@
 
         public string Country { get; set; } = string.Empty;
         public bool TermsAccepted { get; set; }
-        public UserType UserTypeId { get; set; } 
+        public UserType UserTypeId { get; set; } = UserType.Normal;
         public string? Experience { get; set; } = string.Empty;
         public string? EducationLevel { get; set; } = string.Empty;
         public string? CVPath { get; set; } = string.Empty; // Para almacenar la ruta del archivo CV
@@ -27,5 +27,10 @@
     {
         public required string Email { get; set; }
         public required string Password { get; set; }
+    }
+    public class PasswordResetDTO
+    {
+        public required string NewPassword { get; set; }
+        public required string ConfirmPassword { get; set; }
     }
 }

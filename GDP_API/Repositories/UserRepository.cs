@@ -59,5 +59,14 @@ public class UserRepository : IUserRepository
         }
         throw new Exception("User not confirmed");
     }
+    public async Task ResetPassword(User user, string password)
+    {
+        if(user.Confirmed){
+            user.Password = password;
+            await _context.SaveChangesAsync();
+            return;
+        }
+        throw new Exception("User not confirmed");
+    }
 }
     
