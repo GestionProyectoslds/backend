@@ -31,13 +31,12 @@ public class EmailService : IEmailService
     request.AddParameter("from", $"GDP <mailgun@{domain}>");
     request.AddParameter("to", $"{to}");
     request.AddParameter("subject", $"{subject}");
-    request.AddParameter("text", $"{text} _");
+    request.AddParameter("text", $"GDP");
+    request.AddParameter("html", $"{text}");
     request.Method = Method.Post;
 
     var response = await client.ExecuteAsync(request);
-    _logger.LogInformation(response.Content);
-
-  
+   
 }
         
     }
