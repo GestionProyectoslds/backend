@@ -15,6 +15,9 @@ namespace GDP_API.Models
         public string Blockers { get; set; } = string.Empty;
         public ActivityPriority Priority { get; set; }
         public int ProjectId { get; set; }           
+        public Project Project { get; set; }
+        public ICollection<UserHasActivity> UserHasActivities { get; set; }
+
     }
     
 }

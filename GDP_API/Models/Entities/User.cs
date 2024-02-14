@@ -25,7 +25,9 @@ namespace GDP_API.Models
         public DateTime CreatedDate { get; set; }
         public UserType UserTypeId { get; set; }
 
-        public ICollection<UserHasProject> UserHasProjects { get; set; }              
+        public ICollection<UserHasProject> UserHasProjects { get; set; }
+        public ICollection<UserHasActivity> UserHasActivities { get; set; }
+          
     }
     
 }

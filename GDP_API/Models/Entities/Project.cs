@@ -13,7 +13,8 @@ namespace GDP_API.Models
         public decimal Budget { get; set; }
         public decimal Cost { get; set; }
         public string Comments { get; set; } = string.Empty;
-        public ICollection<UserHasProject> UserHasProjects { get; set; }     
+        public ICollection<UserHasProject> UserHasProjects { get; set; }
+        public ICollection<Activity> Activities { get; set; }
     }
     
 }
