@@ -23,7 +23,9 @@ namespace GDP_API.Models
         public string Token { get; set; } = string.Empty;
         public bool TermsAccepted { get; set; } = false;
         public DateTime CreatedDate { get; set; }
-        public UserType UserTypeId { get; set; }              
+        public UserType UserTypeId { get; set; }
+
+        public ICollection<UserHasProject> UserHasProjects { get; set; }              
     }
     
 }
