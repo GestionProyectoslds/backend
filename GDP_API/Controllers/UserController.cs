@@ -67,9 +67,17 @@ namespace GDP_API.Controllers
         {
             try
             {
-                var registrationResult = await _service.RegisterExpert(request);
-                var userType = request.UserTypeId == UserType.Expert ? "Expert " : "";
-                return Ok($"{registrationResult.User} {userType}User Registered");
+                if (request.UserTypeId == UserType.Normal)
+                {
+                    var user = await _service.Register(request);
+                    return Ok(new { message = "Registration successful ", user.Email });
+                }
+                if (request.UserTypeId == UserType.Expert)
+                {
+                    var expert = await _service.RegisterExpert(request);
+                    return Ok(new { message = "Registration successful ", expert.User.Email });
+                }
+                return BadRequest(new { message = "Invalid user type" });
             }
             catch (Exception ex)
             {

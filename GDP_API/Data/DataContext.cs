@@ -24,6 +24,13 @@ namespace GDP_API.Data
             .WithOne()
             .HasForeignKey<ExpertUser>(eu => eu.UserId);
 
+            modelBuilder.Entity<Project>()
+            .Property(p => p.Budget)
+            .HasColumnType("decimal(18, 2)");
+            modelBuilder.Entity<Project>()
+            .Property(p => p.Cost)
+            .HasColumnType("decimal(18, 2)");
+
             modelBuilder.Entity<UserHasProject>()
            .HasKey(uhp => new { uhp.UserId, uhp.ProjectId });
 
