@@ -2,7 +2,7 @@
 {
     public class UserRegistrationDTO
     {
-       public required string Name { get; set; } = string.Empty;
+        public required string Name { get; set; } = string.Empty;
         public required string Surname { get; set; } = string.Empty;
         public required string Email { get; set; } = string.Empty;
         public required string PhoneNumber { get; set; } = string.Empty;
@@ -27,6 +27,11 @@
     {
         public required string Email { get; set; }
         public required string Password { get; set; }
+    }
+    public class RequestOtpDTO
+    {
+        public required string Email { get; set; }
+        public bool isReset { get; set; } = false;
     }
     public class PasswordResetDTO
     {
