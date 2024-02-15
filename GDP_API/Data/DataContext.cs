@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 namespace GDP_API.Data
 {
     public class DataContext : DbContext
-    { 
-        public DataContext(DbContextOptions<DataContext> options) : base(options) 
+    {
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
 
-        
+
         }
         public DbSet<User> Users { get; set; }
         public DbSet<ExpertUser> ExpertUsers { get; set; }
@@ -23,9 +23,9 @@ namespace GDP_API.Data
             .HasOne(eu => eu.User)
             .WithOne()
             .HasForeignKey<ExpertUser>(eu => eu.UserId);
-            
-             modelBuilder.Entity<UserHasProject>()
-            .HasKey(uhp => new { uhp.UserId, uhp.ProjectId });
+
+            modelBuilder.Entity<UserHasProject>()
+           .HasKey(uhp => new { uhp.UserId, uhp.ProjectId });
 
             modelBuilder.Entity<UserHasProject>()
             .HasOne(uhp => uhp.User)

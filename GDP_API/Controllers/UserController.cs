@@ -17,7 +17,7 @@ namespace GDP_API.Controllers
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-        [HttpGet(Name="All")]
+        [HttpGet(Name = "All")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -36,7 +36,7 @@ namespace GDP_API.Controllers
 
             return Ok(user);
         }
-        [HttpGet("email/{email}")] 
+        [HttpGet("email/{email}")]
         [Authorize]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
@@ -58,7 +58,7 @@ namespace GDP_API.Controllers
             }
             catch (Exception ex)
             {
-               
+
                 return BadRequest(new { message = "Email confirmation failed", error = ex.Message });
             }
         }
@@ -77,9 +77,10 @@ namespace GDP_API.Controllers
             }
         }
         [HttpPost("login")]
-        public async Task<IActionResult> Login(EmailLoginDTO request, bool otp= false)
+        public async Task<IActionResult> Login(EmailLoginDTO request, bool otp = false)
         {
-            try{
+            try
+            {
                 var token = await _service.Login(request.Email, request.Password, otp);
                 if (token == null)
                 {
@@ -90,44 +91,44 @@ namespace GDP_API.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { message = "Login failed", error = ex.Message });
-            
-        }
+
+            }
         }
         [HttpPost("requestOtp")]
-        public async Task<IActionResult> RequestOtp(string email)
-    {
-        try
+        public async Task<IActionResult> RequestOtp(RequestOtpDTO request)
         {
-            await _service.RequestOtp(email);
-            return Ok(new { message = "OTP sent." });
+            try
+            {
+                var response = await _service.RequestOtp(request.Email, request.isReset);
+                return Ok(new { message = response });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return BadRequest(new { message = ex.Message });
+            }
         }
-        catch (Exception ex)
-        {
-            // Log the exception
-            return BadRequest(new { message = ex.Message });
-        }
-    }
         [Authorize]
         [HttpPost("resetPassword")]
         public async Task<IActionResult> ResetPassword(PasswordResetDTO newPassword)
         {
-        try
-        {
-        // Get the user's ID from the JWT
-        var jwt = Request.Headers["Authorization"].ToString().Replace("bearer ", "");
-        var userId = User.FindFirstValue(ClaimTypes.Name);
-        if (userId == null)
-        {
-            return BadRequest(new { message = "Invalid user" });
+            try
+            {
+                // Get the user's ID from the JWT
+                var jwt = Request.Headers["Authorization"].ToString().Replace("bearer ", "");
+                var userId = User.FindFirstValue(ClaimTypes.Name);
+                if (userId == null)
+                {
+                    return BadRequest(new { message = "Invalid user" });
+                }
+                // Reset the password
+                await _service.ResetPassword(jwt, newPassword.NewPassword, newPassword.ConfirmPassword);
+                return Ok(new { message = "Password reset successful." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"{ex.Message}" });
+            }
         }
-        // Reset the password
-        await _service.ResetPassword(jwt, newPassword.NewPassword, newPassword.ConfirmPassword);
-        return Ok(new { message = "Password reset successful." });
-        }
-        catch (Exception ex)
-        {
-        return BadRequest(new { message = $"{ex.Message}" });
-    }
-}
     }
 }
