@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34408.163
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BarradeBusqueda", "BarradeBusqueda\BarradeBusqueda.csproj", "{E340B5A6-7282-46A5-8AC4-329246F491FA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E340B5A6-7282-46A5-8AC4-329246F491FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E340B5A6-7282-46A5-8AC4-329246F491FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E340B5A6-7282-46A5-8AC4-329246F491FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E340B5A6-7282-46A5-8AC4-329246F491FA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B82A49AD-1385-4A00-AFFB-1DBD56E6C01E}
+	EndGlobalSection
+EndGlobal
