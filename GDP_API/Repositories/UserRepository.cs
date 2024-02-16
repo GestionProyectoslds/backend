@@ -10,8 +10,7 @@ public class UserRepository : IUserRepository
     {
         _context = context;
         _logger = logger;
-    }
-   
+    }   
 
     public async Task<List<User>> GetAllUsers()
     {
@@ -53,7 +52,7 @@ public class UserRepository : IUserRepository
     {
         if(user.Confirmed){
             user.Token = string.Empty;
-            _logger.LogInformation("OTP reset");
+  
             await _context.SaveChangesAsync();
             return;
         }
