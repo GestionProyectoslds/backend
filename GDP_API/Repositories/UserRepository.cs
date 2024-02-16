@@ -10,8 +10,7 @@ public class UserRepository : IUserRepository
     {
         _context = context;
         _logger = logger;
-    }
-   
+    }   
 
     public async Task<List<User>> GetAllUsers()
     {

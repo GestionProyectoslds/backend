@@ -17,8 +17,6 @@ public class ExpertUserRepository : IExpertUserRepository
         return expertUser;
     }
 
-    public async Task<ExpertUser> GetByUserId(int userId)
-    {
-        return await _context.ExpertUsers.FindAsync(userId);
-    }
+    public async Task<ExpertUser> GetByUserId(int userId) => await _context.ExpertUsers.FindAsync(userId) ?? default;
+
 }

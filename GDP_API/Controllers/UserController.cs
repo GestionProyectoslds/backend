@@ -11,12 +11,14 @@ namespace GDP_API.Controllers
     {
         private readonly IUserService _service;
         private readonly ILogger<UserController> _logger;
+        const string NF = "User not found";
 
         public UserController(IUserService service, ILogger<UserController> logger)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
+
         [HttpGet(Name = "All")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUsers()
@@ -24,6 +26,7 @@ namespace GDP_API.Controllers
             var users = await _service.GetAllUsers();
             return Ok(users);
         }
+
         [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> GetUser(int id)
@@ -31,11 +34,12 @@ namespace GDP_API.Controllers
             var user = await _service.GetUser(id);
             if (user == null)
             {
-                return NotFound("User not found");
+                return NotFound();
             }
 
             return Ok(user);
-        }
+        }       
+
         [HttpGet("email/{email}")]
         [Authorize]
         public async Task<IActionResult> GetUserByEmail(string email)
@@ -48,6 +52,7 @@ namespace GDP_API.Controllers
 
             return Ok(user);
         }
+
         [HttpGet("email/confirm")]
         public async Task<IActionResult> ConfirmEmail(string email, string token)
         {
@@ -62,22 +67,23 @@ namespace GDP_API.Controllers
                 return BadRequest(new { message = "Email confirmation failed", error = ex.Message });
             }
         }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegistrationDTO request)
         {
             try
             {
-                if (request.UserTypeId == UserType.Normal)
+                switch (request.UserTypeId)
                 {
-                    var user = await _service.Register(request);
-                    return Ok(new { message = "Registration successful ", user.Email });
+                    case UserType.Normal:
+                        var user = await _service.Register(request);
+                        return Ok(new { message = "Registration successful ", user.Email });
+                    case UserType.Expert:
+                        var expert = await _service.RegisterExpert(request);
+                        return Ok(new { message = "Registration successful ", expert.User.Email });
+                    default:
+                        return BadRequest(new { message = "Invalid user type" });
                 }
-                if (request.UserTypeId == UserType.Expert)
-                {
-                    var expert = await _service.RegisterExpert(request);
-                    return Ok(new { message = "Registration successful ", expert.User.Email });
-                }
-                return BadRequest(new { message = "Invalid user type" });
             }
             catch (Exception ex)
             {
@@ -107,7 +113,7 @@ namespace GDP_API.Controllers
         {
             try
             {
-                var response = await _service.RequestOtp(request.Email, request.isReset);
+                var response = await _service.RequestOtp(request.Email, request.IsReset);
                 return Ok(new { message = response });
             }
             catch (Exception ex)
@@ -138,5 +144,13 @@ namespace GDP_API.Controllers
                 return BadRequest(new { message = $"{ex.Message}" });
             }
         }
+
+        #region private methods
+            private IActionResult NotFound()
+            {
+                _logger.LogError(NF);
+                return NotFound(NF);
+            }
+        #endregion
     }
 }

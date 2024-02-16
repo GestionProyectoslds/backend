@@ -1,6 +1,8 @@
 
 
-    public interface IEmailService
-    {
-        Task SendEmailAsync(string to, string subject, string html);
-    }
+using RestSharp;
+
+public interface IEmailService
+{
+    Task<RestResponse> SendEmailAsync(string to, string subject, string html);
+}

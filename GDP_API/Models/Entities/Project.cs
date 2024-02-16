@@ -1,11 +1,8 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace GDP_API.Models
 {
-    
-      public class Project
+    public class Project
     {
-        public int Id { get; set; }       
+        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
@@ -16,5 +13,4 @@ namespace GDP_API.Models
         public ICollection<UserHasProject> UserHasProjects { get; set; }
         public ICollection<Activity> Activities { get; set; }
     }
-    
 }
