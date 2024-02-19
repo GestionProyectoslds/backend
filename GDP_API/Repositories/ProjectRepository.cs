@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 public class ProjectRepository : IProjectRepository
 {
     private readonly DataContext _context;
-
+    const string PNF = "Project not found";
     public ProjectRepository(DataContext context)
     {
         _context = context;
@@ -19,7 +19,7 @@ public class ProjectRepository : IProjectRepository
     {
         var project = await _context.Projects.FindAsync(id);
 
-        return project ?? throw new KeyNotFoundException();
+        return project ?? throw new KeyNotFoundException(PNF);
     }
 
     public async Task<Project> CreateProject(Project project)
