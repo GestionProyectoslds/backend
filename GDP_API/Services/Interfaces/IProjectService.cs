@@ -8,4 +8,6 @@ public interface IProjectService
     Task<Project> CreateProject(ProjectCreationDTO projectDto);
     Task UpdateProject(ProjectDTO projectDto);
     Task DeleteProject(int id);
+    Task LinkUserProject(UserProjectLinkDto userProjectLinkDto);
+    Task UnlinkUserProject(UserProjectLinkDto userProjectLinkDto);
 }

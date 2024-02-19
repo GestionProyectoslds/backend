@@ -4,10 +4,13 @@ using Microsoft.EntityFrameworkCore;
 public class ProjectRepository : IProjectRepository
 {
     private readonly DataContext _context;
+    private readonly ILogger<ProjectRepository> _logger;
     const string PNF = "Project not found";
-    public ProjectRepository(DataContext context)
+    const string NotLinked = "User is not linked to project";
+    public ProjectRepository(DataContext context, ILogger<ProjectRepository> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<IEnumerable<Project>> GetAllProjects()
@@ -37,10 +40,45 @@ public class ProjectRepository : IProjectRepository
 
     public async Task DeleteProject(int id)
     {
-        var project = await _context.Projects.FindAsync(id);
-        if (project is null) throw new KeyNotFoundException();
 
+        var project = await _context.Projects.FindAsync(id);
+        if (project is null)
+        {
+            throw new KeyNotFoundException(PNF);
+        }
         _context.Projects.Remove(project);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task LinkUserProject(int userId, int projectId)
+    {
+        var userHasProject = new UserHasProject
+        {
+            UserId = userId,
+            ProjectId = projectId
+        };
+
+        await _context.UserHasProjects.AddAsync(userHasProject);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UnlinkUserProject(int userId, int projectId)
+    {
+        _logger.LogInformation($"Unlinking user {userId} from project {projectId}");
+        var userHasProject = new UserHasProject
+        {
+            UserId = userId,
+            ProjectId = projectId
+        };
+        if (!await _context.UserHasProjects.AnyAsync(x => x.UserId == userId && x.ProjectId == projectId))
+        {
+            throw new KeyNotFoundException(NotLinked);
+        }
+        _context.UserHasProjects.Remove(userHasProject);
+        await _context.SaveChangesAsync();
+    }
+    public async Task<bool> UserHasProject(int userId, int projectId)
+    {
+        return await _context.UserHasProjects.AnyAsync(x => x.UserId == userId && x.ProjectId == projectId);
     }
 }

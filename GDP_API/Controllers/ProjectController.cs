@@ -8,20 +8,21 @@ using Microsoft.AspNetCore.Mvc;
 public class ProjectsController : ControllerBase
 {
     private readonly IProjectService _service;
+    private readonly IUserService _userService;
 
     public ProjectsController(IProjectService service)
     {
         _service = service;
     }
 
-    [HttpGet]
+    [HttpGet("all"), Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllProjects()
     {
         var projects = await _service.GetAllProjects();
         return Ok(projects);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}"), Authorize()]
     public async Task<IActionResult> GetProjectById(int id)
     {
         try
@@ -36,14 +37,14 @@ public class ProjectsController : ControllerBase
 
     }
 
-    [HttpPost]
+    [HttpPost("create"), Authorize()]
     public async Task<IActionResult> CreateProject(ProjectCreationDTO projectDto)
     {
         var project = await _service.CreateProject(projectDto);
         return CreatedAtAction(nameof(GetProjectById), new { id = project.Id }, project);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("update"), Authorize()]
     public async Task<IActionResult> UpdateProject(ProjectDTO projectDto)
     {
         try
@@ -57,7 +58,7 @@ public class ProjectsController : ControllerBase
         }
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}"), Authorize()]
     public async Task<IActionResult> DeleteProject(int id)
     {
         try
@@ -68,6 +69,33 @@ public class ProjectsController : ControllerBase
         catch (Exception ex)
         {
             return NotFound(ex.Message);
+        }
+    }
+    [HttpPost("addUser")]
+    public async Task<IActionResult> LinkUserProject(UserProjectLinkDto userProjectLinkDto)
+    {
+        try
+        {
+            await _service.LinkUserProject(userProjectLinkDto);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost("removeUser")]
+    public async Task<IActionResult> UnlinkUserProject(UserProjectLinkDto userProjectLinkDto)
+    {
+        try
+        {
+            await _service.UnlinkUserProject(userProjectLinkDto);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
         }
     }
 }

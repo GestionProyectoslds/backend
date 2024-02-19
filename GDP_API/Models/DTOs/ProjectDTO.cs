@@ -22,5 +22,9 @@ namespace GDP_API.Models.DTOs
         public string Comments { get; set; } = string.Empty;
     }
 
-
+    public class UserProjectLinkDto
+    {
+        public int UserId { get; set; }
+        public int ProjectId { get; set; }
+    }
 }

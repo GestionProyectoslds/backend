@@ -6,4 +6,7 @@ public interface IProjectRepository
     Task<Project> CreateProject(Project project);
     Task UpdateProject(Project project);
     Task DeleteProject(int id);
+    Task LinkUserProject(int userId, int projectId);
+    Task UnlinkUserProject(int userId, int projectId);
+    Task<bool> UserHasProject(int userID, int projectID);
 }

@@ -1,13 +1,18 @@
 using GDP_API.Models;
 using GDP_API.Models.DTOs;
+using RestSharp;
 
 public class ProjectService : IProjectService
 {
     private readonly IProjectRepository _repository;
-
-    public ProjectService(IProjectRepository repository)
+    private readonly IUserService _userService;
+    const string InvalidID = "Invalid user or project ID";
+    const string NF = "User not found";
+    const string PNF = "Project not found";
+    public ProjectService(IProjectRepository repository, IUserService userService)
     {
         _repository = repository;
+        _userService = userService;
     }
 
     public Task<IEnumerable<Project>> GetAllProjects()
@@ -21,12 +26,11 @@ public class ProjectService : IProjectService
         {
             return _repository.GetProjectById(id);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return null;
+            throw new Exception("Error getting project", ex);
         }
     }
-
     /// <summary>
     /// Creates a new project based on the provided project DTO.
     /// </summary>
@@ -52,7 +56,6 @@ public class ProjectService : IProjectService
         }
 
     }
-
     /// <summary>
     /// Updates a project with the provided project DTO.
     /// </summary>
@@ -80,9 +83,65 @@ public class ProjectService : IProjectService
         }
 
     }
-
     public Task DeleteProject(int id)
     {
         return _repository.DeleteProject(id);
+    }
+    public async Task LinkUserProject(UserProjectLinkDto userProjectLinkDto)
+    {
+        try
+        {
+            await linkingValidations(userProjectLinkDto);
+            if (await _repository.UserHasProject(userProjectLinkDto.UserId, userProjectLinkDto.ProjectId))
+            {
+                throw new ArgumentException("User is already linked to project");
+            }
+            await _repository.LinkUserProject(userProjectLinkDto.UserId, userProjectLinkDto.ProjectId);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error linking user to project:\n {ex.Message}");
+        }
+    }
+    public async Task UnlinkUserProject(UserProjectLinkDto userProjectLinkDto)
+    {
+        try
+        {
+            await linkingValidations(userProjectLinkDto);
+
+            await _repository.UnlinkUserProject(userProjectLinkDto.UserId, userProjectLinkDto.ProjectId);
+
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error unlinking user to project:\n {ex.Message}");
+        }
+    }
+    private async Task linkingValidations(UserProjectLinkDto userProjectLinkDto)
+    {
+        if (userProjectLinkDto.UserId == 0 || userProjectLinkDto.ProjectId == 0)
+        {
+            throw new ArgumentException(InvalidID);
+        }
+        await ValidateUser(userProjectLinkDto.UserId);
+        await ValidateProject(userProjectLinkDto.ProjectId);
+
+    }
+    private async Task ValidateUser(int userId)
+    {
+        bool userExists = await _userService.GetUser(userId) is not null;
+        if (!userExists)
+        {
+            throw new KeyNotFoundException(NF);
+        }
+    }
+
+    private async Task ValidateProject(int id)
+    {
+        bool projectExists = await _repository.GetProjectById(id) is not null;
+        if (!projectExists)
+        {
+            throw new KeyNotFoundException(PNF);
+        }
     }
 }
