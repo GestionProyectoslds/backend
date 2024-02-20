@@ -1,101 +1,103 @@
-using System.Security.Claims;
-using GDP_API.Models;
+
 using GDP_API.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-[ApiController]
-[Route("api/[controller]")]
-public class ProjectsController : ControllerBase
+
+namespace GDP_API.Controllers
 {
-    private readonly IProjectService _service;
-    private readonly IUserService _userService;
-
-    public ProjectsController(IProjectService service)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ProjectsController : ControllerBase
     {
-        _service = service;
-    }
+        private readonly IProjectService _service;
 
-    [HttpGet("all"), Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAllProjects()
-    {
-        var projects = await _service.GetAllProjects();
-        return Ok(projects);
-    }
-
-    [HttpGet("{id}"), Authorize()]
-    public async Task<IActionResult> GetProjectById(int id)
-    {
-        try
+        public ProjectsController(IProjectService service)
         {
-            var project = await _service.GetProjectById(id);
-            return Ok(project);
-        }
-        catch (Exception ex)
-        {
-            return NotFound(ex.Message);
+            _service = service;
         }
 
-    }
+        [HttpGet("all"), Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllProjects()
+        {
+            var projects = await _service.GetAllProjects();
+            return Ok(projects);
+        }
 
-    [HttpPost("create"), Authorize()]
-    public async Task<IActionResult> CreateProject(ProjectCreationDTO projectDto)
-    {
-        var project = await _service.CreateProject(projectDto);
-        return CreatedAtAction(nameof(GetProjectById), new { id = project.Id }, project);
-    }
+        [HttpGet("{id}"), Authorize()]
+        public async Task<IActionResult> GetProjectById(int id)
+        {
+            try
+            {
+                var project = await _service.GetProjectById(id);
+                return Ok(project);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
 
-    [HttpPut("update"), Authorize()]
-    public async Task<IActionResult> UpdateProject(ProjectDTO projectDto)
-    {
-        try
-        {
-            await _service.UpdateProject(projectDto);
-            return Ok();
         }
-        catch (Exception ex)
-        {
-            return NotFound(ex.Message);
-        }
-    }
 
-    [HttpDelete("{id}"), Authorize()]
-    public async Task<IActionResult> DeleteProject(int id)
-    {
-        try
+        [HttpPost("create"), Authorize()]
+        public async Task<IActionResult> CreateProject(ProjectCreationDTO projectDto)
         {
-            await _service.DeleteProject(id);
-            return Ok();
+            var project = await _service.CreateProject(projectDto);
+            return CreatedAtAction(nameof(GetProjectById), new { id = project.Id }, project);
         }
-        catch (Exception ex)
-        {
-            return NotFound(ex.Message);
-        }
-    }
-    [HttpPost("addUser")]
-    public async Task<IActionResult> LinkUserProject(UserProjectLinkDto userProjectLinkDto)
-    {
-        try
-        {
-            await _service.LinkUserProject(userProjectLinkDto);
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
 
-    [HttpPost("removeUser")]
-    public async Task<IActionResult> UnlinkUserProject(UserProjectLinkDto userProjectLinkDto)
-    {
-        try
+        [HttpPut("update"), Authorize()]
+        public async Task<IActionResult> UpdateProject(ProjectDTO projectDto)
         {
-            await _service.UnlinkUserProject(userProjectLinkDto);
-            return Ok();
+            try
+            {
+                await _service.UpdateProject(projectDto);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
-        catch (Exception ex)
+
+        [HttpDelete("{id}"), Authorize()]
+        public async Task<IActionResult> DeleteProject(int id)
         {
-            return BadRequest(ex.Message);
+            try
+            {
+                await _service.DeleteProject(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+        [HttpPost("addUser")]
+        public async Task<IActionResult> LinkUserProject(UserProjectLinkDto userProjectLinkDto)
+        {
+            try
+            {
+                await _service.LinkUserProject(userProjectLinkDto);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("removeUser")]
+        public async Task<IActionResult> UnlinkUserProject(UserProjectLinkDto userProjectLinkDto)
+        {
+            try
+            {
+                await _service.UnlinkUserProject(userProjectLinkDto);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 using GDP_API.Models;
 using GDP_API.Models.DTOs;
-using RestSharp;
 
 public class ProjectService : IProjectService
 {
@@ -15,19 +14,23 @@ public class ProjectService : IProjectService
         _userService = userService;
     }
 
-    public Task<IEnumerable<Project>> GetAllProjects()
+    public async Task<IEnumerable<Project>> GetAllProjects()
     {
-        return _repository.GetAllProjects();
+        return await _repository.GetAllProjects();
     }
 
-    public Task<Project> GetProjectById(int id)
+    public async Task<Project> GetProjectById(int id)
     {
         try
         {
-            return _repository.GetProjectById(id);
+            return await _repository.GetProjectById(id);
         }
         catch (Exception ex)
         {
+            if (ex is KeyNotFoundException)
+            {
+                throw new KeyNotFoundException(PNF);
+            }
             throw new Exception("Error getting project", ex);
         }
     }
@@ -45,7 +48,9 @@ public class ProjectService : IProjectService
                 Name = projectDto.Name,
                 Budget = projectDto.Budget,
                 StartDate = projectDto.StartDate,
-                EndDate = projectDto.EndDate
+                EndDate = projectDto.EndDate,
+                Description = projectDto.Description,
+                Comments = projectDto.Comments
             };
 
             return await _repository.CreateProject(project);
