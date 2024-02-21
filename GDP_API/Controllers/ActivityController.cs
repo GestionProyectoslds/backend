@@ -86,5 +86,37 @@ namespace GDP_API.Controllers
 
             return Ok();
         }
+        [HttpPost("assignUser")]
+        public async Task<IActionResult> LinkUser(LinkActivityDto linkActivityDto)
+        {
+            try
+            {
+                await _service.LinkUserToActivity(linkActivityDto.ActivityId, linkActivityDto.UserId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("removeUser")]
+        public async Task<IActionResult> UnlinkUser(LinkActivityDto linkActivityDto)
+        {
+            try
+            {
+                await _service.UnlinkUserFromActivity(linkActivityDto.ActivityId, linkActivityDto.UserId);
+                return Ok();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

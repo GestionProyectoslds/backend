@@ -7,10 +7,13 @@ using Microsoft.EntityFrameworkCore;
 public class ActivityRepository : IActivityRepository
 {
     private readonly DataContext _context;
+    private readonly ILogger<ActivityRepository> _logger;
     const string NF = "Activity not found";
-    public ActivityRepository(DataContext context)
+    const string NotLinked = "User is not linked to activity";
+    public ActivityRepository(DataContext context, ILogger<ActivityRepository> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<Activity> CreateActivity(Activity activity)
@@ -42,13 +45,30 @@ public class ActivityRepository : IActivityRepository
         await _context.SaveChangesAsync();
     }
 
-    public Task LinkUserToActivity(int userId, int activityId)
+    public async Task LinkUserToActivity(int userId, int activityId)
     {
-        throw new NotImplementedException();
+        var userHasActivity = new UserHasActivity
+        {
+            UserId = userId,
+            ActivityId = activityId
+        };
+        await _context.UserHasActivities.AddAsync(userHasActivity);
+        await _context.SaveChangesAsync();
     }
 
-    public Task UnlinkUserFromActivity(int userId, int activityId)
+    public async Task UnlinkUserFromActivity(int userId, int activityId)
     {
-        throw new NotImplementedException();
+        _logger.LogInformation($"Unlinking user {userId} from activity {activityId}");
+        var userHasActivity = new UserHasActivity
+        {
+            UserId = userId,
+            ActivityId = activityId
+        };
+        if (!await _context.UserHasActivities.ContainsAsync(userHasActivity))
+        {
+            throw new KeyNotFoundException(NotLinked);
+        }
+        _context.UserHasActivities.Remove(userHasActivity);
+        await _context.SaveChangesAsync();
     }
 }

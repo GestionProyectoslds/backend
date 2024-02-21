@@ -1,18 +1,20 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using GDP_API.Models.DTOs;
 using GDP_API.Models;
 
 public class ActivityService : IActivityService
 {
     private readonly IActivityRepository _repository;
     private readonly IProjectService _projectService;
+    private readonly IUserService _userService;
     private readonly ILogger<ActivityService> _logger;
     const string ANF = "Activity not found";
+    const string UNF = "User not found";
     const string PDE = "Project does not exist";
-    public ActivityService(IActivityRepository repository, IProjectService projectService, ILogger<ActivityService> logger)
+    public ActivityService(IActivityRepository repository, IProjectService projectService, IUserService userService, ILogger<ActivityService> logger)
     {
         _repository = repository;
         _projectService = projectService;
+        _userService = userService;
         _logger = logger;
     }
 
@@ -45,6 +47,7 @@ public class ActivityService : IActivityService
 
     public async Task<Activity?> GetActivity(int id)
     {
+        _logger.LogInformation($"Getting activity with ID {id}");
         return await _repository.GetActivity(id);
     }
 
@@ -90,15 +93,63 @@ public class ActivityService : IActivityService
         }
     }
 
-    public Task LinkUserToActivity(int userId, int activityId)
+    public async Task LinkUserToActivity(int activityId, int userId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            _logger.LogInformation($"Linking user {userId} to activity {activityId}");
+            var user = await _userService.GetUser(userId);
+            var activity = await GetActivity(activityId);
+            if (user is null)
+            {
+                throw new KeyNotFoundException(UNF);
+            }
+            if (activity is null)
+            {
+                throw new KeyNotFoundException(ANF);
+            }
+            await _repository.LinkUserToActivity(userId, activityId);
+        }
+        catch (KeyNotFoundException e)
+        {
+            throw new KeyNotFoundException(e.Message);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
     }
 
-    public Task UnlinkUserFromActivity(int userId, int activityId)
+    public async Task UnlinkUserFromActivity(int activityId, int userId)
     {
-        throw new NotImplementedException();
+        _logger.LogInformation($"Unlinking user {userId} from activity {activityId}");
+        try
+        {
+            var user = await _userService.GetUser(userId);
+            var activity = await GetActivity(activityId);
+            if (user is null)
+            {
+                throw new KeyNotFoundException(UNF);
+            }
+            if (activity is null)
+            {
+                throw new KeyNotFoundException(ANF);
+            }
+            await _repository.UnlinkUserFromActivity(userId, activityId);
+        }
+        catch (KeyNotFoundException e)
+        {
+            throw new KeyNotFoundException(e.Message);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+
     }
+    #region Private Methods
+
+
     private Activity BuildFromDto(ActivityDto activityDto, bool isUpdate = false)
     {
         return new Activity
@@ -127,5 +178,5 @@ public class ActivityService : IActivityService
         //ProjectId should not be updated
 
     }
-
+    #endregion
 }
