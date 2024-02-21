@@ -10,6 +10,7 @@ public class ActivityRepository : IActivityRepository
     private readonly ILogger<ActivityRepository> _logger;
     const string NF = "Activity not found";
     const string NotLinked = "User is not linked to activity";
+    const string Linked = "User is already linked to activity";
     public ActivityRepository(DataContext context, ILogger<ActivityRepository> logger)
     {
         _context = context;
@@ -52,6 +53,10 @@ public class ActivityRepository : IActivityRepository
             UserId = userId,
             ActivityId = activityId
         };
+        if (await _context.UserHasActivities.ContainsAsync(userHasActivity))
+        {
+            throw new DbUpdateException(Linked);
+        }
         await _context.UserHasActivities.AddAsync(userHasActivity);
         await _context.SaveChangesAsync();
     }
@@ -70,5 +75,13 @@ public class ActivityRepository : IActivityRepository
         }
         _context.UserHasActivities.Remove(userHasActivity);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Activity>> GetActivitiesByUser(int userId)
+    {
+        return await _context.UserHasActivities
+       .Where(ua => ua.UserId == userId)
+       .Select(ua => ua.Activity)
+       .ToListAsync();
     }
 }

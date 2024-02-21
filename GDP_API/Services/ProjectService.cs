@@ -1,3 +1,4 @@
+using GDP_API;
 using GDP_API.Models;
 using GDP_API.Models.DTOs;
 
@@ -140,7 +141,18 @@ public class ProjectService : IProjectService
             throw new KeyNotFoundException(NF);
         }
     }
-
+    public async Task<IEnumerable<User>> GetUsersByProject(int id, UserType userType = 0)
+    {
+        try
+        {
+            await ValidateProject(id);
+            return await _repository.GetUsersByProject(id, userType);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error getting users by project", ex);
+        }
+    }
     private async Task ValidateProject(int id)
     {
         bool projectExists = await _repository.GetProjectById(id) is not null;
@@ -149,4 +161,6 @@ public class ProjectService : IProjectService
             throw new KeyNotFoundException(PNF);
         }
     }
+
+
 }

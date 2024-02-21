@@ -50,7 +50,10 @@ public class ActivityService : IActivityService
         _logger.LogInformation($"Getting activity with ID {id}");
         return await _repository.GetActivity(id);
     }
-
+    public async Task<List<Activity>> GetActivitiesByUser(int userId)
+    {
+        return await _repository.GetActivitiesByUser(userId);
+    }
     /// <summary>
     /// Updates an activity with the specified ID using the provided activity DTO.
     /// </summary>
@@ -109,6 +112,10 @@ public class ActivityService : IActivityService
                 throw new KeyNotFoundException(ANF);
             }
             await _repository.LinkUserToActivity(userId, activityId);
+        }
+        catch (Microsoft.EntityFrameworkCore.DbUpdateException e)
+        {
+            throw new Microsoft.EntityFrameworkCore.DbUpdateException(e.Message);
         }
         catch (KeyNotFoundException e)
         {

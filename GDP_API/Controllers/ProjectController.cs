@@ -37,7 +37,19 @@ namespace GDP_API.Controllers
             }
 
         }
-
+        [HttpGet("{id}/users"), Authorize()]
+        public async Task<IActionResult> GetUsersByProject(int id, UserType userType = 0)
+        {
+            try
+            {
+                var users = await _service.GetUsersByProject(id, userType);
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
         [HttpPost("create"), Authorize()]
         public async Task<IActionResult> CreateProject(ProjectCreationDTO projectDto)
         {

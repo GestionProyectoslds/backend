@@ -1,6 +1,7 @@
 using GDP_API.Models;
 using GDP_API.Data;
 using Microsoft.EntityFrameworkCore;
+using GDP_API;
 public class ProjectRepository : IProjectRepository
 {
     private readonly DataContext _context;
@@ -80,5 +81,19 @@ public class ProjectRepository : IProjectRepository
     public async Task<bool> UserHasProject(int userId, int projectId)
     {
         return await _context.UserHasProjects.AnyAsync(x => x.UserId == userId && x.ProjectId == projectId);
+    }
+
+    /// <summary>
+    /// Retrieves a collection of users associated with a specific project.
+    /// </summary>
+    /// <param name="projectId">The ID of the project.</param>
+    /// <param name="userType">The type of user to filter by. Defaults to 0 (all user types).</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the collection of users.</returns>
+    public async Task<IEnumerable<User>> GetUsersByProject(int projectId, UserType userType = 0)
+    {
+        return await _context.UserHasProjects
+        .Where(up => up.ProjectId == projectId && (userType == 0 || up.User.UserTypeId == userType))
+        .Select(up => up.User)
+        .ToListAsync();
     }
 }

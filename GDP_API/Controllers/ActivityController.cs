@@ -3,6 +3,7 @@ using GDP_API.Models;
 using GDP_API.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GDP_API.Controllers
@@ -53,6 +54,11 @@ namespace GDP_API.Controllers
             }
             return activity;
         }
+        [HttpGet("user/{id}"), Authorize()]
+        public async Task<ActionResult<List<Activity>>> GetActivitiesByUser(int id)
+        {
+            return await _service.GetActivitiesByUser(id);
+        }
 
         [HttpPut("{id}"), Authorize()]
         public async Task<IActionResult> UpdateActivity(int id, ActivityDto activityDto)
@@ -86,7 +92,7 @@ namespace GDP_API.Controllers
 
             return Ok();
         }
-        [HttpPost("assignUser")]
+        [HttpPost("assignUser"), Authorize()]
         public async Task<IActionResult> LinkUser(LinkActivityDto linkActivityDto)
         {
             try
@@ -94,13 +100,22 @@ namespace GDP_API.Controllers
                 await _service.LinkUserToActivity(linkActivityDto.ActivityId, linkActivityDto.UserId);
                 return Ok();
             }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
+
         }
 
-        [HttpPost("removeUser")]
+        [HttpPost("removeUser"), Authorize()]
         public async Task<IActionResult> UnlinkUser(LinkActivityDto linkActivityDto)
         {
             try
