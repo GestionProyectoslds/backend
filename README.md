@@ -20,6 +20,33 @@ Alternatively, you can run the project from the terminal:
 dotnet run
 ```
 
+## Configuration
+
+The application's configuration is stored in the `appsettings.json` file. Here's what the structure of this file looks like:
+
+```json
+{
+    "ConnectionStrings": {
+        "DefaultConnection": "SqlServer connection string"
+    },
+    "AppSettings": {
+        "Token": "256-bit Signing token for JWT",
+        "BackEndUrl": ""
+    },
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft.AspNetCore": "Warning"
+        }
+    },
+    "AllowedHosts": "",
+    "EmailSettings": {
+        "MailgunAPIKey": "",
+        "MailgunDomain": ""
+    }
+}
+```
+
 ## Creating Migrations
 
 This needs a database connection to function, you may need to create and run a migration to run this project in a development environment.
@@ -38,3 +65,5 @@ Update-Database
 dotnet ef migrations add MigrationName
 dotnet ef database update
 ```
+
+### Appsettings structure

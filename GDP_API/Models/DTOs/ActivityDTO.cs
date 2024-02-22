@@ -1,10 +1,9 @@
+using GDP_API;
 
-
-namespace GDP_API.Models
+namespace GDP_API.Models.DTOs
 {
-    public class Activity
+    public class ActivityDto
     {
-        public int Id { get; set; }
         public string Description { get; set; } = string.Empty;
         public string AcceptanceCriteria { get; set; } = string.Empty;
         public string RequestedChanges { get; set; } = string.Empty;
@@ -14,7 +13,11 @@ namespace GDP_API.Models
         public string Blockers { get; set; } = string.Empty;
         public ActivityPriority Priority { get; set; }
         public int ProjectId { get; set; }
-        public Project? Project { get; set; }
-        public ICollection<UserHasActivity>? UserHasActivities { get; set; }
     }
+    public class LinkActivityDto
+    {
+        public int UserId { get; set; }
+        public int ActivityId { get; set; }
+    }
+
 }

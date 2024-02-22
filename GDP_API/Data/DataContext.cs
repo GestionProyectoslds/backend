@@ -14,6 +14,8 @@ namespace GDP_API.Data
         public DbSet<ExpertUser> ExpertUsers { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Activity> Activities { get; set; }
+        public DbSet<UserHasProject> UserHasProjects { get; set; }
+        public DbSet<UserHasActivity> UserHasActivities { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
