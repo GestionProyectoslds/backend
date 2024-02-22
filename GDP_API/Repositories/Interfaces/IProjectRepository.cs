@@ -8,6 +8,9 @@ public interface IProjectRepository
     Task UpdateProject(Project project);
     Task DeleteProject(int id);
     Task<IEnumerable<User>> GetUsersByProject(int id, UserType userType = 0);
+    Task<IEnumerable<Project>> GetProjectsByUserId(int id);
+    Task<IEnumerable<Project>> GetProjectsByUserName(string userName);
+    Task<IEnumerable<Project>> GetProjectsByUserEmail(string email);
     Task LinkUserProject(int userId, int projectId);
     Task UnlinkUserProject(int userId, int projectId);
     Task<bool> UserHasProject(int userID, int projectID);

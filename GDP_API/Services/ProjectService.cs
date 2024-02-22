@@ -9,6 +9,8 @@ public class ProjectService : IProjectService
     const string InvalidID = "Invalid user or project ID";
     const string NF = "User not found";
     const string PNF = "Project not found";
+    const string SWW = "Something went wrong";
+
     public ProjectService(IProjectRepository repository, IUserService userService)
     {
         _repository = repository;
@@ -58,7 +60,7 @@ public class ProjectService : IProjectService
         }
         catch (Exception ex)
         {
-            throw new Exception("Error creating project", ex);
+            throw new Exception(SWW, ex);
         }
 
     }
@@ -74,7 +76,7 @@ public class ProjectService : IProjectService
             var project = await _repository.GetProjectById(projectDto.Id);
             if (project is null)
             {
-                throw new ArgumentException("Project not found");
+                throw new ArgumentException(PNF);
             }
             project.Name = projectDto.Name;
             project.Budget = projectDto.Budget;
@@ -85,7 +87,7 @@ public class ProjectService : IProjectService
         }
         catch (Exception ex)
         {
-            throw new Exception("Error updating project", ex);
+            throw new Exception(SWW, ex);
         }
 
     }
@@ -123,6 +125,66 @@ public class ProjectService : IProjectService
             throw new Exception($"Error unlinking user to project:\n {ex.Message}");
         }
     }
+    public async Task<IEnumerable<User>> GetUsersByProject(int id, UserType userType = 0)
+    {
+        try
+        {
+            await ValidateProject(id);
+            return await _repository.GetUsersByProject(id, userType);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error getting users by project", ex);
+        }
+    }
+
+    #region get projects by user 
+    public async Task<IEnumerable<Project>> GetProjectsByUserId(int id)
+    {
+        try
+        {
+            return await _repository.GetProjectsByUserId(id);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(SWW, ex);
+        }
+    }
+    public async Task<IEnumerable<Project>> GetProjectsByUserName(string userName)
+    {
+        try
+        {
+            return await _repository.GetProjectsByUserName(userName);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(SWW, ex);
+        }
+    }
+
+    public async Task<IEnumerable<Project>> GetProjectsByUserEmail(string email)
+    {
+        try
+        {
+            return await _repository.GetProjectsByUserEmail(email);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(SWW, ex);
+        }
+    }
+
+    #endregion
+
+    #region private methods
+    private async Task ValidateProject(int id)
+    {
+        bool projectExists = await _repository.GetProjectById(id) is not null;
+        if (!projectExists)
+        {
+            throw new KeyNotFoundException(PNF);
+        }
+    }
     private async Task linkingValidations(UserProjectLinkDto userProjectLinkDto)
     {
         if (userProjectLinkDto.UserId == 0 || userProjectLinkDto.ProjectId == 0)
@@ -141,26 +203,7 @@ public class ProjectService : IProjectService
             throw new KeyNotFoundException(NF);
         }
     }
-    public async Task<IEnumerable<User>> GetUsersByProject(int id, UserType userType = 0)
-    {
-        try
-        {
-            await ValidateProject(id);
-            return await _repository.GetUsersByProject(id, userType);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Error getting users by project", ex);
-        }
-    }
-    private async Task ValidateProject(int id)
-    {
-        bool projectExists = await _repository.GetProjectById(id) is not null;
-        if (!projectExists)
-        {
-            throw new KeyNotFoundException(PNF);
-        }
-    }
 
+    #endregion
 
 }

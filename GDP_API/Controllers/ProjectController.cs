@@ -50,6 +50,42 @@ namespace GDP_API.Controllers
                 return NotFound(ex.Message);
             }
         }
+        [HttpGet("user/id/{id}"), Authorize()]
+        public async Task<IActionResult> GetProjectsByUserId(int id)
+        {
+            try
+            {
+                var projects = await _service.GetProjectsByUserId(id);
+                return Ok(projects);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+
+        }
+        [HttpGet("user/{identifier}"), Authorize()]
+        public async Task<IActionResult> GetProjectsByUserName(string identifier, UserSearchMethod searchMethod)
+        {
+            try
+            {
+                switch (searchMethod)
+                {
+                    case UserSearchMethod.Email:
+                        return Ok(await _service.GetProjectsByUserEmail(identifier));
+                    case UserSearchMethod.Name:
+                        return Ok(await _service.GetProjectsByUserName(identifier));
+                    default:
+                        return BadRequest("Invalid search method");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
         [HttpPost("create"), Authorize()]
         public async Task<IActionResult> CreateProject(ProjectCreationDTO projectDto)
         {
