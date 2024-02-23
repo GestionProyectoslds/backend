@@ -16,6 +16,10 @@ namespace GDP_API.Controllers
             _service = service;
         }
 
+        /// <summary>
+        /// Retrieves all projects.
+        /// </summary>
+        /// <returns>An IActionResult containing the list of projects.</returns>
         [HttpGet("all"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllProjects()
         {
@@ -23,6 +27,11 @@ namespace GDP_API.Controllers
             return Ok(projects);
         }
 
+        /// <summary>
+        /// Retrieves a project by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the project.</param>
+        /// <returns>An IActionResult representing the result of the operation.</returns>
         [HttpGet("{id}"), Authorize()]
         public async Task<IActionResult> GetProjectById(int id)
         {
@@ -51,6 +60,11 @@ namespace GDP_API.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves projects based on the provided filter.
+        /// </summary>
+        /// <param name="filter">The filter to apply to the projects.</param>
+        /// <returns>An IActionResult containing the projects that match the filter.</returns>
         [HttpPost("filterProjects"), Authorize()]
         public async Task<IActionResult> GetProjectsByFilter(ProjectFilterDTO filter)
         {
@@ -69,6 +83,11 @@ namespace GDP_API.Controllers
             }
         }
 
+        /// <summary>
+        /// Creates a new project.
+        /// </summary>
+        /// <param name="projectDto">The project data transfer object.</param>
+        /// <returns>The created project.</returns>
         [HttpPost("create"), Authorize()]
         public async Task<IActionResult> CreateProject(ProjectCreationDTO projectDto)
         {
@@ -76,6 +95,11 @@ namespace GDP_API.Controllers
             return CreatedAtAction(nameof(GetProjectById), new { id = project.Id }, project);
         }
 
+        /// <summary>
+        /// Updates a project.
+        /// </summary>
+        /// <param name="projectDto">The project DTO.</param>
+        /// <returns>An IActionResult indicating the result of the update operation.</returns>
         [HttpPut("update"), Authorize()]
         public async Task<IActionResult> UpdateProject(ProjectDTO projectDto)
         {
@@ -90,6 +114,11 @@ namespace GDP_API.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes a project by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the project to delete.</param>
+        /// <returns>An IActionResult representing the result of the deletion operation.</returns>
         [HttpDelete("{id}"), Authorize()]
         public async Task<IActionResult> DeleteProject(int id)
         {
@@ -103,6 +132,11 @@ namespace GDP_API.Controllers
                 return NotFound(ex.Message);
             }
         }
+        /// <summary>
+        /// Links a user to a project.
+        /// </summary>
+        /// <param name="userProjectLinkDto">The user project link DTO.</param>
+        /// <returns>An <see cref="IActionResult"/> representing the result of the operation.</returns>
         [HttpPost("addUser")]
         public async Task<IActionResult> LinkUserProject(UserProjectLinkDto userProjectLinkDto)
         {
@@ -117,6 +151,11 @@ namespace GDP_API.Controllers
             }
         }
 
+        /// <summary>
+        /// Unlinks a user from a project.
+        /// </summary>
+        /// <param name="userProjectLinkDto">The user-project link DTO.</param>
+        /// <returns>An IActionResult representing the result of the operation.</returns>
         [HttpPost("removeUser")]
         public async Task<IActionResult> UnlinkUserProject(UserProjectLinkDto userProjectLinkDto)
         {

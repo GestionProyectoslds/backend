@@ -7,6 +7,7 @@ public interface IActivityService
     Task<List<Activity>> GetActivities();
     Task<Activity?> GetActivity(int id);
     Task<List<Activity>> GetActivitiesByUser(int userId);
+    Task<List<Activity>> FilterActivities(ActivityFilterDto filter);
     Task<Activity> UpdateActivity(int id, ActivityDto activity);
     Task DeleteActivity(int id);
     Task LinkUserToActivity(int userId, int activityId);

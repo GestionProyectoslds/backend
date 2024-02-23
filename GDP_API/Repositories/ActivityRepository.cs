@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using GDP_API.Data;
 using GDP_API.Models;
+using GDP_API.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -11,6 +12,7 @@ public class ActivityRepository : IActivityRepository
     const string NF = "Activity not found";
     const string NotLinked = "User is not linked to activity";
     const string Linked = "User is already linked to activity";
+    const string NoFilter = "At least one filter property must be set";
     public ActivityRepository(DataContext context, ILogger<ActivityRepository> logger)
     {
         _context = context;
@@ -83,5 +85,68 @@ public class ActivityRepository : IActivityRepository
        .Where(ua => ua.UserId == userId)
        .Select(ua => ua.Activity)
        .ToListAsync();
+    }
+
+    public async Task<List<Activity>> FilterActivities(ActivityFilterDto filter)
+    {
+        // Check if all properties of the filter are null
+        if (filter.GetType().GetProperties().All(prop => prop.GetValue(filter) == null))
+        {
+            // If all properties are null, return an empty list
+            throw new ArgumentException(NoFilter);
+        }
+        var query = _context.Activities.AsQueryable();
+
+        if (filter.Id.HasValue)
+        {
+            query = query.Where(a => a.Id == filter.Id.Value);
+        }
+
+        if (!string.IsNullOrEmpty(filter.Description))
+        {
+            query = query.Where(a => a.Description.Contains(filter.Description));
+        }
+
+        if (!string.IsNullOrEmpty(filter.AcceptanceCriteria))
+        {
+            query = query.Where(a => a.AcceptanceCriteria.Contains(filter.AcceptanceCriteria));
+        }
+
+        if (!string.IsNullOrEmpty(filter.RequestedChanges))
+        {
+            query = query.Where(a => a.RequestedChanges.Contains(filter.RequestedChanges));
+        }
+
+        if (!string.IsNullOrEmpty(filter.Status))
+        {
+            query = query.Where(a => a.Status.Contains(filter.Status));
+        }
+
+        if (filter.StartDate.HasValue)
+        {
+            query = query.Where(a => a.StartDate >= filter.StartDate.Value);
+        }
+
+        if (filter.EndDate.HasValue)
+        {
+            query = query.Where(a => a.EndDate <= filter.EndDate.Value);
+        }
+
+        if (!string.IsNullOrEmpty(filter.Blockers))
+        {
+            query = query.Where(a => a.Blockers.Contains(filter.Blockers));
+        }
+
+        if (filter.Priority.HasValue)
+        {
+            query = query.Where(a => a.Priority == filter.Priority.Value);
+        }
+
+        if (filter.ProjectId.HasValue)
+        {
+            query = query.Where(a => a.ProjectId == filter.ProjectId.Value);
+        }
+
+        return await query.ToListAsync();
     }
 }
