@@ -59,6 +59,10 @@ namespace GDP_API.Controllers
                 var projects = await _service.GetProjectsByFilter(filter);
                 return Ok(projects);
             }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (Exception ex)
             {
                 return NotFound(ex.Message);
