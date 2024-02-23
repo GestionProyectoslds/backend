@@ -21,6 +21,23 @@ namespace GDP_API.Models.DTOs
         public decimal Cost { get; set; }
         public string Comments { get; set; } = string.Empty;
     }
+    public class ProjectFilterDTO
+    {
+        public int? Id { get; set; }
+        public string? Name { get; set; } = string.Empty;
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public decimal? MaxBudget { get; set; }
+        public decimal? MinBudget { get; set; }
+        public decimal? MaxCost { get; set; }
+        public decimal? MinCost { get; set; }
+        public int? UserId { get; set; }
+        public string? UserName { get; set; } = string.Empty;
+        public string? UserEmail { get; set; } = string.Empty;
+        //TODO: Implement CATEGORY @IsaacCruz
+    }
+
+
 
     public class UserProjectLinkDto
     {

@@ -137,44 +137,22 @@ public class ProjectService : IProjectService
             throw new Exception("Error getting users by project", ex);
         }
     }
-
-    #region get projects by user 
-    public async Task<IEnumerable<Project>> GetProjectsByUserId(int id)
+    public Task<IEnumerable<Project>> GetProjectsByFilter(ProjectFilterDTO filter)
     {
         try
         {
-            return await _repository.GetProjectsByUserId(id);
+            return _repository.GetProjectsByFilter(filter);
+        }
+        catch (ArgumentException ex)
+        {
+            throw new ArgumentException(SWW, ex);
+
         }
         catch (Exception ex)
         {
             throw new Exception(SWW, ex);
         }
     }
-    public async Task<IEnumerable<Project>> GetProjectsByUserName(string userName)
-    {
-        try
-        {
-            return await _repository.GetProjectsByUserName(userName);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(SWW, ex);
-        }
-    }
-
-    public async Task<IEnumerable<Project>> GetProjectsByUserEmail(string email)
-    {
-        try
-        {
-            return await _repository.GetProjectsByUserEmail(email);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(SWW, ex);
-        }
-    }
-
-    #endregion
 
     #region private methods
     private async Task ValidateProject(int id)
@@ -203,6 +181,8 @@ public class ProjectService : IProjectService
             throw new KeyNotFoundException(NF);
         }
     }
+
+
 
     #endregion
 

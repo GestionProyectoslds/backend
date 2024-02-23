@@ -2,12 +2,14 @@ using GDP_API.Models;
 using GDP_API.Data;
 using Microsoft.EntityFrameworkCore;
 using GDP_API;
+using GDP_API.Models.DTOs;
 public class ProjectRepository : IProjectRepository
 {
     private readonly DataContext _context;
     private readonly ILogger<ProjectRepository> _logger;
     const string PNF = "Project not found";
     const string NotLinked = "User is not linked to project";
+    const string NoFilter = "At least one filter property must be set";
     public ProjectRepository(DataContext context, ILogger<ProjectRepository> logger)
     {
         _context = context;
@@ -132,46 +134,57 @@ public class ProjectRepository : IProjectRepository
         .Select(up => up.User)
         .ToListAsync();
     }
-    #region get projects by user
-    /// <summary>
-    /// Retrieves a collection of projects associated with a specific user ID.
-    /// </summary>
-    /// <param name="userId">The ID of the user.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the collection of projects.</returns>
-    public async Task<IEnumerable<Project>> GetProjectsByUserId(int userId)
+    public async Task<IEnumerable<Project>> GetProjectsByFilter(ProjectFilterDTO filter)
     {
-        return await _context.UserHasProjects
-        .Where(up => up.UserId == userId)
-        .Select(up => up.Project)
-        .ToListAsync();
+        // Check if all properties of the filter are null
+        if (filter.GetType().GetProperties().All(prop => prop.GetValue(filter) == null))
+        {
+            // If all properties are null, return an empty list
+            throw new ArgumentException(NoFilter);
+        }
+
+        var query = _context.Projects.AsQueryable();
+
+        if (!string.IsNullOrEmpty(filter.Name))
+        {
+            query = query.Where(p => p.Name.Contains(filter.Name));
+        }
+
+        if (filter.UserId is not null && filter.UserId != 0)
+        {
+            query = query.Where(p => p.UserHasProjects.Any(up => up.UserId == filter.UserId));
+        }
+
+        if (filter.StartDate.HasValue)
+        {
+            query = query.Where(p => p.StartDate >= filter.StartDate.Value);
+        }
+
+        if (filter.EndDate.HasValue)
+        {
+            query = query.Where(p => p.EndDate <= filter.EndDate.Value);
+        }
+        if (filter.MinBudget.HasValue)
+        {
+            query = query.Where(p => p.Budget >= filter.MinBudget.Value);
+        }
+
+        if (filter.MaxBudget.HasValue)
+        {
+            query = query.Where(p => p.Budget <= filter.MaxBudget.Value);
+        }
+
+        if (filter.MinCost.HasValue)
+        {
+            query = query.Where(p => p.Cost >= filter.MinCost.Value);
+        }
+
+        if (filter.MaxCost.HasValue)
+        {
+            query = query.Where(p => p.Cost <= filter.MaxCost.Value);
+        }
+        return await query.ToListAsync();
     }
 
-    /// <summary>
-    /// Retrieves a collection of projects associated with a given user name.
-    /// </summary>
-    /// <param name="userName">The user name to search for.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the collection of projects.</returns>
-    public async Task<IEnumerable<Project>> GetProjectsByUserName(string userName)
-    {
-        return await _context.UserHasProjects
-        .Where(up => up.User.Name.Contains(userName))
-        .OrderBy(up => up.User.Name != userName)
-        .Select(up => up.Project)
-        .ToListAsync();
-    }
-
-    /// <summary>
-    /// Retrieves a collection of projects associated with a user's email.
-    /// </summary>
-    /// <param name="email">The email of the user.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the collection of projects.</returns>
-    public async Task<IEnumerable<Project>> GetProjectsByUserEmail(string email)
-    {
-        return await _context.UserHasProjects
-       .Where(up => up.User.Email == email)
-       .Select(up => up.Project)
-       .ToListAsync();
-    }
-    #endregion
 
 }
