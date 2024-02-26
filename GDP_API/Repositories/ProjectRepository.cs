@@ -156,7 +156,7 @@ public class ProjectRepository : IProjectRepository
         }
         if (!string.IsNullOrEmpty(filter.CategoryName))
         {
-            query = query.Where(p => p.ProjectHasCategories.Any(phc => phc.Category.Name == filter.CategoryName));
+            query = query.Where(p => p.ProjectHasCategories.Any(phc => phc.Category.Name.Contains(filter.CategoryName)));
         }
         if (filter.UserId is not null && filter.UserId != 0)
         {
