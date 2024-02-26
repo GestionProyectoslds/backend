@@ -149,12 +149,14 @@ public class ProjectRepository : IProjectRepository
         {
             query = query.Where(p => p.Name.Contains(filter.Name));
         }
-
+        if (!string.IsNullOrEmpty(filter.CategoryName))
+        {
+            query = query.Where(p => p.ProjectHasCategories.Any(phc => phc.Category.Name == filter.CategoryName));
+        }
         if (filter.UserId is not null && filter.UserId != 0)
         {
             query = query.Where(p => p.UserHasProjects.Any(up => up.UserId == filter.UserId));
         }
-
         if (filter.StartDate.HasValue)
         {
             query = query.Where(p => p.StartDate >= filter.StartDate.Value);

@@ -35,6 +35,7 @@ namespace GDP_API.Models.DTOs
         public string? UserName { get; set; } = string.Empty;
         public string? UserEmail { get; set; } = string.Empty;
         //TODO: Implement CATEGORY @IsaacCruz
+        public string? CategoryName { get; set; } = string.Empty;
     }
 
 
