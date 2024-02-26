@@ -14,6 +14,8 @@ namespace GDP_API.Data
         public DbSet<ExpertUser> ExpertUsers { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Activity> Activities { get; set; }
+        public DbSet<ProjectCategory> ProjectCategories { get; set; }
+        public DbSet<ProjectHasCategory> ProjectHasCategories { get; set; }
         public DbSet<UserHasProject> UserHasProjects { get; set; }
         public DbSet<UserHasActivity> UserHasActivities { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -66,10 +68,13 @@ namespace GDP_API.Data
             .HasOne(a => a.Project)
             .WithMany(p => p.Activities)
             .HasForeignKey(a => a.ProjectId);
+            // ProjectCategory has a unique index on name
+            modelBuilder.Entity<ProjectCategory>()
+            .HasIndex(pc => pc.Name)
+            .IsUnique();
             // Category and Project have a many-to-many relationship 
             modelBuilder.Entity<ProjectHasCategory>()
             .HasKey(phc => new { phc.ProjectId, phc.CategoryId });
-
             modelBuilder.Entity<ProjectHasCategory>()
                 .HasOne(phc => phc.Project)
                 .WithMany(p => p.ProjectHasCategories)

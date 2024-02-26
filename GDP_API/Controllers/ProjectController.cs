@@ -1,4 +1,5 @@
 
+using GDP_API.Models;
 using GDP_API.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -137,7 +138,8 @@ namespace GDP_API.Controllers
         /// </summary>
         /// <param name="userProjectLinkDto">The user project link DTO.</param>
         /// <returns>An <see cref="IActionResult"/> representing the result of the operation.</returns>
-        [HttpPost("addUser")]
+        #region LinkAndUnlinkUser
+        [HttpPost("addUser"), Authorize()]
         public async Task<IActionResult> LinkUserProject(UserProjectLinkDto userProjectLinkDto)
         {
             try
@@ -156,7 +158,7 @@ namespace GDP_API.Controllers
         /// </summary>
         /// <param name="userProjectLinkDto">The user-project link DTO.</param>
         /// <returns>An IActionResult representing the result of the operation.</returns>
-        [HttpPost("removeUser")]
+        [HttpPost("removeUser"), Authorize()]
         public async Task<IActionResult> UnlinkUserProject(UserProjectLinkDto userProjectLinkDto)
         {
             try
@@ -169,5 +171,55 @@ namespace GDP_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        #endregion
+        #region Categories
+        [HttpPost("category/create"), Authorize()]
+        public async Task<ActionResult<ProjectCategory>> CreateCategory(ProjectCategoryCreationDTO category)
+        {
+            try
+            {
+                var newCategory = await _service.CreateCategory(category);
+                return Ok(newCategory);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("category/link")]
+        public async Task<ActionResult> LinkCategoryToProject(LinkProjectCategoryDTO linkProjectCategoryDTO)
+        {
+            try
+            {
+                await _service.LinkCategoryProject(linkProjectCategoryDTO.CategoryId, linkProjectCategoryDTO.ProjectId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
+        [HttpPost("category/unlink")]
+        public async Task<ActionResult> UnlinkCategoryFromProject(LinkProjectCategoryDTO linkProjectCategoryDTO)
+        {
+            try
+            {
+                await _service.UnLinkCategoryProject(linkProjectCategoryDTO.CategoryId, linkProjectCategoryDTO.ProjectId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+
+        #endregion
     }
 }

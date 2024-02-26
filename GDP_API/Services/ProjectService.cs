@@ -137,11 +137,11 @@ public class ProjectService : IProjectService
             throw new Exception("Error getting users by project", ex);
         }
     }
-    public Task<IEnumerable<Project>> GetProjectsByFilter(ProjectFilterDTO filter)
+    public async Task<IEnumerable<Project>> GetProjectsByFilter(ProjectFilterDTO filter)
     {
         try
         {
-            return _repository.GetProjectsByFilter(filter);
+            return await _repository.GetProjectsByFilter(filter);
         }
         catch (ArgumentException ex)
         {
@@ -153,7 +153,43 @@ public class ProjectService : IProjectService
             throw new Exception(SWW, ex);
         }
     }
-
+    public async Task<ProjectCategory> CreateCategory(ProjectCategoryCreationDTO categoryDto)
+    {
+        try
+        {
+            var category = new ProjectCategory
+            {
+                Name = categoryDto.Name,
+            };
+            return await _repository.CreateCategory(category);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"{SWW}\n{ex.Message}", ex);
+        }
+    }
+    public async Task LinkCategoryProject(int categoryId, int projectId)
+    {
+        try
+        {
+            await _repository.LinkCategoryProject(categoryId, projectId);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"{SWW}\n{ex.Message}", ex);
+        }
+    }
+    public async Task UnLinkCategoryProject(int categoryId, int projectId)
+    {
+        try
+        {
+            await _repository.UnLinkCategoryProject(categoryId, projectId);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"{SWW}\n{ex.Message}", ex);
+        }
+    }
     #region private methods
     private async Task ValidateProject(int id)
     {

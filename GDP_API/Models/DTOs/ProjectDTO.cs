@@ -37,12 +37,18 @@ namespace GDP_API.Models.DTOs
         //TODO: Implement CATEGORY @IsaacCruz
         public string? CategoryName { get; set; } = string.Empty;
     }
-
-
-
     public class UserProjectLinkDto
     {
         public int UserId { get; set; }
         public int ProjectId { get; set; }
+    }
+    public class LinkProjectCategoryDTO
+    {
+        public int ProjectId { get; set; }
+        public int CategoryId { get; set; }
+    }
+    public class ProjectCategoryCreationDTO
+    {
+        public string Name { get; set; } = string.Empty;
     }
 }

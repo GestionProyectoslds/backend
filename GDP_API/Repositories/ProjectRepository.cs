@@ -10,6 +10,11 @@ public class ProjectRepository : IProjectRepository
     const string PNF = "Project not found";
     const string NotLinked = "User is not linked to project";
     const string NoFilter = "At least one filter property must be set";
+    private const string ELC = "Error linking category to project";
+    private const string CALTP = "Category is already linked to project";
+    private const string CALE = "Category already exists";
+    private const string CNLTP = "Category is not linked to project";
+
     public ProjectRepository(DataContext context, ILogger<ProjectRepository> logger)
     {
         _context = context;
@@ -188,5 +193,54 @@ public class ProjectRepository : IProjectRepository
         return await query.ToListAsync();
     }
 
-
+    public async Task<ProjectCategory> CreateCategory(ProjectCategory category)
+    {
+        try
+        {
+            if (await _context.ProjectCategories.AnyAsync(x => x.Name == category.Name))
+            {
+                throw new DbUpdateException(CALE);
+            }
+            _context.ProjectCategories.Add(category);
+            await _context.SaveChangesAsync();
+            return category;
+        }
+        catch (DbUpdateException e)
+        {
+            _logger.LogError(e, CALE);
+            throw new DbUpdateException(CALE);
+        }
+    }
+    public async Task LinkCategoryProject(int categoryId, int projectId)
+    {
+        try
+        {
+            var projectHasCategory = new ProjectHasCategory
+            {
+                CategoryId = categoryId,
+                ProjectId = projectId
+            };
+            await _context.ProjectHasCategories.AddAsync(projectHasCategory);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException e)
+        {
+            _logger.LogError(e, ELC);
+            throw new DbUpdateException(CALTP);
+        }
+    }
+    public async Task UnLinkCategoryProject(int categoryId, int projectId)
+    {
+        var projectHasCategory = new ProjectHasCategory
+        {
+            CategoryId = categoryId,
+            ProjectId = projectId
+        };
+        if (!await _context.ProjectHasCategories.AnyAsync(x => x.CategoryId == categoryId && x.ProjectId == projectId))
+        {
+            throw new KeyNotFoundException(CNLTP);
+        }
+        _context.ProjectHasCategories.Remove(projectHasCategory);
+        await _context.SaveChangesAsync();
+    }
 }

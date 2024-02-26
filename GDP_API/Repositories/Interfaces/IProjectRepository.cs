@@ -14,4 +14,7 @@ public interface IProjectRepository
     Task LinkUserProject(int userId, int projectId);
     Task UnlinkUserProject(int userId, int projectId);
     Task<bool> UserHasProject(int userID, int projectID);
+    Task<ProjectCategory> CreateCategory(ProjectCategory category);
+    Task LinkCategoryProject(int categoryId, int projectId);
+    Task UnLinkCategoryProject(int categoryId, int projectId);
 }
