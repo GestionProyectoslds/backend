@@ -19,6 +19,10 @@ namespace GDP_API.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        /// <summary>
+        /// Retrieves all users.
+        /// </summary>
+        /// <returns>An IActionResult containing the list of users.</returns>
         [HttpGet(Name = "All")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUsers()
@@ -27,6 +31,11 @@ namespace GDP_API.Controllers
             return Ok(users);
         }
 
+        /// <summary>
+        /// Retrieves a user by their ID.
+        /// </summary>
+        /// <param name="id">The ID of the user to retrieve.</param>
+        /// <returns>An IActionResult representing the result of the operation.</returns>
         [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> GetUser(int id)
@@ -38,8 +47,13 @@ namespace GDP_API.Controllers
             }
 
             return Ok(user);
-        }       
+        }
 
+        /// <summary>
+        /// Retrieves a user by their email address.
+        /// </summary>
+        /// <param name="email">The email address of the user.</param>
+        /// <returns>An IActionResult representing the result of the operation.</returns>
         [HttpGet("email/{email}")]
         [Authorize]
         public async Task<IActionResult> GetUserByEmail(string email)
@@ -53,6 +67,12 @@ namespace GDP_API.Controllers
             return Ok(user);
         }
 
+        /// <summary>
+        /// Confirms the email address of a user.
+        /// </summary>
+        /// <param name="email">The email address of the user.</param>
+        /// <param name="token">The confirmation token.</param>
+        /// <returns>An IActionResult indicating the result of the email confirmation.</returns>
         [HttpGet("email/confirm")]
         public async Task<IActionResult> ConfirmEmail(string email, string token)
         {
@@ -68,6 +88,11 @@ namespace GDP_API.Controllers
             }
         }
 
+        /// <summary>
+        /// Registers a user based on the provided user registration data.
+        /// </summary>
+        /// <param name="request">The user registration data.</param>
+        /// <returns>An <see cref="IActionResult"/> representing the result of the registration operation.</returns>
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegistrationDTO request)
         {
@@ -90,6 +115,12 @@ namespace GDP_API.Controllers
                 return BadRequest(new { message = "Registration failed", error = ex.Message });
             }
         }
+        /// <summary>
+        /// Logs in a user with the provided email and password.
+        /// </summary>
+        /// <param name="request">The email and password login details.</param>
+        /// <param name="otp">Optional parameter indicating whether OTP (One-Time Password) is required.</param>
+        /// <returns>An IActionResult representing the result of the login operation.</returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login(EmailLoginDTO request, bool otp = false)
         {
@@ -108,6 +139,11 @@ namespace GDP_API.Controllers
 
             }
         }
+        /// <summary>
+        /// Requests an OTP (One-Time Password) for the specified user.
+        /// </summary>
+        /// <param name="request">The request object containing the user's email and reset flag.</param>
+        /// <returns>An IActionResult representing the result of the request.</returns>
         [HttpPost("requestOtp")]
         public async Task<IActionResult> RequestOtp(RequestOtpDTO request)
         {
@@ -122,6 +158,11 @@ namespace GDP_API.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        /// <summary>
+        /// Resets the password for the authenticated user.
+        /// </summary>
+        /// <param name="newPassword">The new password to set.</param>
+        /// <returns>An IActionResult indicating the result of the password reset operation.</returns>
         [Authorize]
         [HttpPost("resetPassword")]
         public async Task<IActionResult> ResetPassword(PasswordResetDTO newPassword)
@@ -146,11 +187,11 @@ namespace GDP_API.Controllers
         }
 
         #region private methods
-            private IActionResult NotFound()
-            {
-                _logger.LogError(NF);
-                return NotFound(NF);
-            }
+        private IActionResult NotFound()
+        {
+            _logger.LogError(NF);
+            return NotFound(NF);
+        }
         #endregion
     }
 }

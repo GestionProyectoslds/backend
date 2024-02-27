@@ -185,5 +185,17 @@ public class ActivityService : IActivityService
         //ProjectId should not be updated
 
     }
+
+    public Task<List<Activity>> FilterActivities(ActivityFilterDto filter)
+    {
+        try
+        {
+            return _repository.FilterActivities(filter);
+        }
+        catch (ArgumentException e)
+        {
+            throw new ArgumentException(e.Message);
+        }
+    }
     #endregion
 }

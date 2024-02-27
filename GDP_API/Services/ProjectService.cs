@@ -9,6 +9,8 @@ public class ProjectService : IProjectService
     const string InvalidID = "Invalid user or project ID";
     const string NF = "User not found";
     const string PNF = "Project not found";
+    const string SWW = "Something went wrong";
+
     public ProjectService(IProjectRepository repository, IUserService userService)
     {
         _repository = repository;
@@ -58,7 +60,7 @@ public class ProjectService : IProjectService
         }
         catch (Exception ex)
         {
-            throw new Exception("Error creating project", ex);
+            throw new Exception(SWW, ex);
         }
 
     }
@@ -74,7 +76,7 @@ public class ProjectService : IProjectService
             var project = await _repository.GetProjectById(projectDto.Id);
             if (project is null)
             {
-                throw new ArgumentException("Project not found");
+                throw new ArgumentException(PNF);
             }
             project.Name = projectDto.Name;
             project.Budget = projectDto.Budget;
@@ -85,7 +87,7 @@ public class ProjectService : IProjectService
         }
         catch (Exception ex)
         {
-            throw new Exception("Error updating project", ex);
+            throw new Exception(SWW, ex);
         }
 
     }
@@ -123,6 +125,66 @@ public class ProjectService : IProjectService
             throw new Exception($"Error unlinking user to project:\n {ex.Message}");
         }
     }
+    public async Task<IEnumerable<User>> GetUsersByProject(int id, UserType userType = 0)
+    {
+        try
+        {
+            await ValidateProject(id);
+            return await _repository.GetUsersByProject(id, userType);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error getting users by project", ex);
+        }
+    }
+    public async Task<IEnumerable<Project>> GetProjectsByFilter(ProjectFilterDTO filter)
+    {
+        try
+        {
+            return await _repository.GetProjectsByFilter(filter);
+        }
+        catch (ArgumentException ex)
+        {
+            throw new ArgumentException(SWW, ex);
+
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(SWW, ex);
+        }
+    }
+
+    public async Task LinkCategoryProject(int categoryId, int projectId)
+    {
+        try
+        {
+            await _repository.LinkCategoryProject(categoryId, projectId);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"{SWW}\n{ex.Message}", ex);
+        }
+    }
+    public async Task UnLinkCategoryProject(int categoryId, int projectId)
+    {
+        try
+        {
+            await _repository.UnLinkCategoryProject(categoryId, projectId);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"{SWW}\n{ex.Message}", ex);
+        }
+    }
+    #region private methods
+    private async Task ValidateProject(int id)
+    {
+        bool projectExists = await _repository.GetProjectById(id) is not null;
+        if (!projectExists)
+        {
+            throw new KeyNotFoundException(PNF);
+        }
+    }
     private async Task linkingValidations(UserProjectLinkDto userProjectLinkDto)
     {
         if (userProjectLinkDto.UserId == 0 || userProjectLinkDto.ProjectId == 0)
@@ -141,26 +203,9 @@ public class ProjectService : IProjectService
             throw new KeyNotFoundException(NF);
         }
     }
-    public async Task<IEnumerable<User>> GetUsersByProject(int id, UserType userType = 0)
-    {
-        try
-        {
-            await ValidateProject(id);
-            return await _repository.GetUsersByProject(id, userType);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Error getting users by project", ex);
-        }
-    }
-    private async Task ValidateProject(int id)
-    {
-        bool projectExists = await _repository.GetProjectById(id) is not null;
-        if (!projectExists)
-        {
-            throw new KeyNotFoundException(PNF);
-        }
-    }
 
+
+
+    #endregion
 
 }
