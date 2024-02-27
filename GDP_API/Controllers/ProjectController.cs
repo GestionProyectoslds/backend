@@ -173,20 +173,6 @@ namespace GDP_API.Controllers
         }
         #endregion
         #region Categories
-        [HttpPost("category/create"), Authorize()]
-        public async Task<ActionResult<ProjectCategory>> CreateCategory(ProjectCategoryCreationDTO category)
-        {
-            try
-            {
-                var newCategory = await _service.CreateCategory(category);
-                return Ok(newCategory);
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(ex.Message);
-            }
-        }
 
         [HttpPost("category/link")]
         public async Task<ActionResult> LinkCategoryToProject(LinkProjectCategoryDTO linkProjectCategoryDTO)

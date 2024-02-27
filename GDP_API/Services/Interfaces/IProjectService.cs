@@ -12,7 +12,7 @@ public interface IProjectService
     Task DeleteProject(int id);
     Task LinkUserProject(UserProjectLinkDto userProjectLinkDto);
     Task UnlinkUserProject(UserProjectLinkDto userProjectLinkDto);
-    Task<ProjectCategory> CreateCategory(ProjectCategoryCreationDTO category);
+
     Task LinkCategoryProject(int categoryId, int projectId);
     Task UnLinkCategoryProject(int categoryId, int projectId);
 }

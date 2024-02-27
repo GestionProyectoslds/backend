@@ -47,8 +47,5 @@ namespace GDP_API.Models.DTOs
         public int ProjectId { get; set; }
         public int CategoryId { get; set; }
     }
-    public class ProjectCategoryCreationDTO
-    {
-        public string Name { get; set; } = string.Empty;
-    }
+
 }

@@ -153,21 +153,7 @@ public class ProjectService : IProjectService
             throw new Exception(SWW, ex);
         }
     }
-    public async Task<ProjectCategory> CreateCategory(ProjectCategoryCreationDTO categoryDto)
-    {
-        try
-        {
-            var category = new ProjectCategory
-            {
-                Name = categoryDto.Name,
-            };
-            return await _repository.CreateCategory(category);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"{SWW}\n{ex.Message}", ex);
-        }
-    }
+
     public async Task LinkCategoryProject(int categoryId, int projectId)
     {
         try
