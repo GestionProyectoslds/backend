@@ -19,7 +19,11 @@ namespace GDP_API.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+        /// <summary>
+        /// Retrieves all project categories.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the action result that returns the project categories.</returns>
+        [HttpGet, Authorize()]
         public async Task<ActionResult<IEnumerable<ProjectCategory>>> GetProjectCategories()
         {
             try
@@ -33,7 +37,12 @@ namespace GDP_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpGet("{id}")]
+        /// <summary>
+        /// Retrieves a project category by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the project category to retrieve.</param>
+        /// <returns>An ActionResult containing the project category if found, or an error message if not found.</returns>
+        [HttpGet("{id}"), Authorize()]
         public async Task<ActionResult<ProjectCategory>> GetProjectCategoryById(int id)
         {
             try
@@ -47,6 +56,28 @@ namespace GDP_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        /// <summary>
+        /// Filters project categories based on the provided filter criteria.
+        /// </summary>
+        /// <param name="filter">The filter criteria.</param>
+        /// <returns>An IActionResult representing the filtered project categories.</returns>
+        [HttpPost("filter"), Authorize()]
+        public async Task<IActionResult> Filter(ProjectCategoryFilterDTO filter)
+        {
+            var projectCategories = await _service.GetProjectCategoriesByFilter(filter);
+
+            if (projectCategories == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(projectCategories);
+        }
+        /// <summary>
+        /// Creates a new project category.
+        /// </summary>
+        /// <param name="projectCategory">The project category to create.</param>
+        /// <returns>The created project category.</returns>
         [HttpPost]
         public async Task<ActionResult<ProjectCategory>> CreateProjectCategory(ProjectCategoryDTO projectCategory)
         {
@@ -61,7 +92,12 @@ namespace GDP_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPut]
+        /// <summary>
+        /// Updates a project category.
+        /// </summary>
+        /// <param name="projectCategory">The project category to update.</param>
+        /// <returns>The updated project category.</returns>
+        [HttpPut, Authorize()]
         public async Task<ActionResult<ProjectCategory>> UpdateProjectCategory(ProjectCategoryDTO projectCategory)
         {
             try
@@ -79,7 +115,12 @@ namespace GDP_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpDelete("{id}")]
+        /// <summary>
+        /// Deletes a project category by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the project category to delete.</param>
+        /// <returns>An ActionResult containing the deleted project category if successful, or an error message if an exception occurs.</returns>
+        [HttpDelete("{id}"), Authorize()]
         public async Task<ActionResult<ProjectCategory>> DeleteProjectCategory(int id)
         {
             try

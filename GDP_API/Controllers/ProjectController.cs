@@ -174,7 +174,7 @@ namespace GDP_API.Controllers
         #endregion
         #region Categories
 
-        [HttpPost("category/link")]
+        [HttpPost("category/link"), Authorize()]
         public async Task<ActionResult> LinkCategoryToProject(LinkProjectCategoryDTO linkProjectCategoryDTO)
         {
             try
@@ -191,7 +191,7 @@ namespace GDP_API.Controllers
 
 
 
-        [HttpPost("category/unlink")]
+        [HttpPost("category/unlink"), Authorize()]
         public async Task<ActionResult> UnlinkCategoryFromProject(LinkProjectCategoryDTO linkProjectCategoryDTO)
         {
             try

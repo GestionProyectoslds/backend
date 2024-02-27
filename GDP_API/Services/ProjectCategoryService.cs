@@ -104,4 +104,16 @@ public class ProjectCategoryService : IProjectCategoryService
             throw new Exception(SWW, ex);
         }
     }
+
+    public async Task<IEnumerable<ProjectCategory>> GetProjectCategoriesByFilter(ProjectCategoryFilterDTO projectCategoryDTO)
+    {
+        try
+        {
+            return await _repository.GetProjectCategoriesByFilter(projectCategoryDTO);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(SWW, ex);
+        }
+    }
 }

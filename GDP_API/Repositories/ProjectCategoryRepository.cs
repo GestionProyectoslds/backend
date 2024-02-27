@@ -1,5 +1,6 @@
 using GDP_API.Data;
 using GDP_API.Models;
+using GDP_API.Models.DTOs;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -43,6 +44,17 @@ public class ProjectCategoryRepository : IProjectCategoryRepository
     {
         return await _context.ProjectCategories.ToListAsync();
     }
+
+    public async Task<IEnumerable<ProjectCategory>> GetProjectCategoriesByFilter(ProjectCategoryFilterDTO projectCategory)
+    {
+        var query = _context.ProjectCategories.AsQueryable();
+        if (!string.IsNullOrEmpty(projectCategory.Name))
+        {
+            query = query.Where(pc => pc.Name.Contains(projectCategory.Name));
+        }
+        return await query.ToListAsync();
+    }
+
     public async Task<ProjectCategory> GetProjectCategoryById(int id)
     {
         return await _context.ProjectCategories.FindAsync(id) ?? throw new KeyNotFoundException(PCNF);

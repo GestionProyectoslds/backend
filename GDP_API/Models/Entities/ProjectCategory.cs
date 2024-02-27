@@ -6,4 +6,5 @@ namespace GDP_API.Models
         public string Name { get; set; }
         public ICollection<ProjectHasCategory> ProjectHasCategories { get; set; }
     }
+
 }
