@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GDP_API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ActivityController : ControllerBase
     {
         private readonly IActivityService _service;
