@@ -78,7 +78,7 @@ namespace GDP_API.Controllers
         /// </summary>
         /// <param name="projectCategory">The project category to create.</param>
         /// <returns>The created project category.</returns>
-        [HttpPost]
+        [HttpPost, Authorize()]
         public async Task<ActionResult<ProjectCategory>> CreateProjectCategory(ProjectCategoryDTO projectCategory)
         {
             try
