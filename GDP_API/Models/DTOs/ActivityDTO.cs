@@ -33,5 +33,18 @@ namespace GDP_API.Models.DTOs
         public int UserId { get; set; }
         public int ActivityId { get; set; }
     }
+    public class PostAOverdue()
+    {
+        public int Id { get; set; }
+        public int Total { get; set; }
+        public int Overdue { get; set; }
 
+    }
+    public class PostAStatus()
+    {
+        public int Id { get; set; }
+        public string Status { get; set; }
+        public int Quantity { get; set; }
+
+    }
 }

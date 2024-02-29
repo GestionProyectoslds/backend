@@ -12,4 +12,6 @@ public interface IActivityService
     Task DeleteActivity(int id);
     Task LinkUserToActivity(int userId, int activityId);
     Task UnlinkUserFromActivity(int userId, int activityId);
+    Task CActivityStatus(int id, string status, int quantity);
+    Task CActivityOverDue(int id, int total, int overdue);
 }

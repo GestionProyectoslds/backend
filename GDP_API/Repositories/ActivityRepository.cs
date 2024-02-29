@@ -78,6 +78,16 @@ public class ActivityRepository : IActivityRepository
         _context.UserHasActivities.Remove(userHasActivity);
         await _context.SaveChangesAsync();
     }
+    public async Task<List<string>> ShowActivitiesStatus(int userId, string Status, int Quantity)
+    {
+        List<string> x = [userId.ToString(), Status, Quantity.ToString()];
+        return  x;
+    }
+    public async Task<List<int>> ActivitiesOverDue(int userId, int Total, int overDue)
+    {
+        List<int> x = [userId, Total, overDue];
+        return x;
+    }
 
     public async Task<List<Activity>> GetActivitiesByUser(int userId)
     {
