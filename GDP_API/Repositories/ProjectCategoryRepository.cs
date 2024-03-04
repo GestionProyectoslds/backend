@@ -1,9 +1,7 @@
 using GDP_API.Data;
 using GDP_API.Models;
 using GDP_API.Models.DTOs;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 public class ProjectCategoryRepository : IProjectCategoryRepository
 {
     private const string ECPC = "Error creating project category";

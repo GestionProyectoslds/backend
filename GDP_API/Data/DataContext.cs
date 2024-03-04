@@ -89,5 +89,6 @@ namespace GDP_API.Data
                 .WithMany(pc => pc.ProjectHasCategories)
                 .HasForeignKey(phc => phc.CategoryId);
         }
+        public DbSet<Notification> Notifications { get; set; }
     }
 }

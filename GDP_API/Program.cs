@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -40,6 +41,9 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    var serviceProvider = builder.Services.BuildServiceProvider();
+    var notificationService = serviceProvider.GetRequiredService<INotificationService>();
+    options.AddInterceptors(new ChangeNotificationInterceptor(notificationService));
 });
 builder.Services.AddCors(options =>
     {
@@ -61,7 +65,7 @@ builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<IProjectCategoryRepository, ProjectCategoryRepository>();
 builder.Services.AddScoped<IProjectCategoryService, ProjectCategoryService>();
-
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 var app = builder.Build();
 

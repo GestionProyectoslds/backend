@@ -20,7 +20,7 @@
         /// <summary>
         /// Used to store the CV file url route.
         /// </summary>
-        public string? CVPath { get; set; } = string.Empty; 
+        public string? CVPath { get; set; } = string.Empty;
         public string? LinkedInURI { get; set; } = string.Empty;
     }
     public class EmailLoginDTO

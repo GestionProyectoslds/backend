@@ -13,7 +13,7 @@ public class EmailService : IEmailService
     }
 
     public async Task<RestResponse> SendEmailAsync(string to, string subject, string text = "")
-    {        
+    {
         var options = new RestClientOptions("https://api.mailgun.net/v3");
         options.Authenticator = new HttpBasicAuthenticator("api", _configuration["EmailSettings:MailGunApiKey"]!);
 

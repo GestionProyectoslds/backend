@@ -3,7 +3,6 @@ using GDP_API.Models;
 using GDP_API.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace GDP_API.Controllers
 {

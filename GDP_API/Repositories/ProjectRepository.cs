@@ -1,8 +1,8 @@
-using GDP_API.Models;
-using GDP_API.Data;
-using Microsoft.EntityFrameworkCore;
 using GDP_API;
+using GDP_API.Data;
+using GDP_API.Models;
 using GDP_API.Models.DTOs;
+using Microsoft.EntityFrameworkCore;
 public class ProjectRepository : IProjectRepository
 {
     private readonly DataContext _context;

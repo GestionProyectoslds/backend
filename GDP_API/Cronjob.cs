@@ -1,12 +1,5 @@
-﻿using GDP_API.Models;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using GDP_API.Data;
 using System.Data;
-using GDP_API.Data;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.ComponentModel;
 
 namespace GDP_API
 {
@@ -91,8 +84,8 @@ namespace GDP_API
                         Console.WriteLine(e.ToString());
                     }
                 }
-                
-                
+
+
                 //10 min delay
                 await Task.Delay(600000);
             }

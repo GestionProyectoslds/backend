@@ -1,6 +1,6 @@
-    using Microsoft.EntityFrameworkCore;
-using GDP_API.Models;
 using GDP_API.Data;
+using GDP_API.Models;
+using Microsoft.EntityFrameworkCore;
 public class UserRepository : IUserRepository
 {
     private readonly DataContext _context;
@@ -10,7 +10,7 @@ public class UserRepository : IUserRepository
     {
         _context = context;
         _logger = logger;
-    }   
+    }
 
     public async Task<List<User>> GetAllUsers()
     {
@@ -30,17 +30,18 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
         return user;
     }
-     public async Task ConfirmEmail(User user)
+    public async Task ConfirmEmail(User user)
     {
 
-            user.Confirmed = true;
-            user.Token = "";
-            await _context.SaveChangesAsync();         
+        user.Confirmed = true;
+        user.Token = "";
+        await _context.SaveChangesAsync();
     }
 
     public async Task SetOtp(User user, string otp)
     {
-        if(user.Confirmed){
+        if (user.Confirmed)
+        {
             user.Token = otp;
             await _context.SaveChangesAsync();
             return;
@@ -50,9 +51,10 @@ public class UserRepository : IUserRepository
 
     public async Task ResetOtp(User user)
     {
-        if(user.Confirmed){
+        if (user.Confirmed)
+        {
             user.Token = string.Empty;
-  
+
             await _context.SaveChangesAsync();
             return;
         }
@@ -60,7 +62,8 @@ public class UserRepository : IUserRepository
     }
     public async Task ResetPassword(User user, string password)
     {
-        if(user.Confirmed){
+        if (user.Confirmed)
+        {
             user.Password = password;
             await _context.SaveChangesAsync();
             return;
@@ -68,4 +71,4 @@ public class UserRepository : IUserRepository
         throw new Exception("User not confirmed");
     }
 }
-    
+

@@ -1,5 +1,5 @@
-using GDP_API.Models.DTOs;
 using GDP_API.Models;
+using GDP_API.Models.DTOs;
 
 public class ActivityService : IActivityService
 {

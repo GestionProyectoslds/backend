@@ -25,8 +25,8 @@ namespace GDP_API.Models
         public UserType UserTypeId { get; set; }
 
         #region Collections
-            public ICollection<UserHasProject> UserHasProjects { get; set; }
-            public ICollection<UserHasActivity> UserHasActivities { get; set; }
+        public ICollection<UserHasProject> UserHasProjects { get; set; }
+        public ICollection<UserHasActivity> UserHasActivities { get; set; }
         #endregion
     }
 

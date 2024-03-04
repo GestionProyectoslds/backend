@@ -1,5 +1,3 @@
-using GDP_API;
-
 namespace GDP_API.Models.DTOs
 {
     public class ActivityDto
