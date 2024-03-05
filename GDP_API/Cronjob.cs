@@ -7,6 +7,10 @@ using System.Data;
 using GDP_API.Data;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel;
+using System.Net.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
+using GDP_API.Models.DTOs;
 
 namespace GDP_API
 {
@@ -59,6 +63,13 @@ namespace GDP_API
                         //Show results in console (change this when the front-end is ready)
                         foreach (var group in q1)
                         {
+
+                            var newPost = new PostAStatus()
+                            {
+                                Id = Int32.Parse(group.users),
+                                Status = group.ts,
+                                Quantity = group.qs,
+                            };
                             Console.WriteLine($"IdUsuario: {group.users}, Tarea status: {group.ts}, Numero de tareas: {group.qs}");
                         }
                         //User tasks comparing deadline with the current date to know if a task is on time or overdue
@@ -82,6 +93,12 @@ namespace GDP_API
                                     overDue++;
                                 }
                             }
+                            var newpost = new PostAOverdue()
+                            {
+                                Id = Int32.Parse(group.Key),
+                                Total = onTime + overDue,
+                                Overdue = overDue,
+                            };
                             //Write in console on time and overdue task delete after conect with front-end
                             Console.WriteLine("Tiene: ", onTime + overDue, " tareas totales y tiene: ", overDue, " tareas atrasadas");
                         }
@@ -91,8 +108,7 @@ namespace GDP_API
                         Console.WriteLine(e.ToString());
                     }
                 }
-                
-                
+
                 //10 min delay
                 await Task.Delay(600000);
             }

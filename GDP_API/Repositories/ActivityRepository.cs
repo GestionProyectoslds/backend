@@ -78,6 +78,16 @@ public class ActivityRepository : IActivityRepository
         _context.UserHasActivities.Remove(userHasActivity);
         await _context.SaveChangesAsync();
     }
+    public async Task<List<string>> ShowActivitiesStatus(int userId, string Status, int Quantity)
+    {
+        List<string> x = [userId.ToString(), Status, Quantity.ToString()];
+        return  x;
+    }
+    public async Task<List<int>> ActivitiesOverDue(int userId, int Total, int overDue)
+    {
+        List<int> x = [userId, Total, overDue];
+        return x;
+    }
 
     public async Task<List<Activity>> GetActivitiesByUser(int userId)
     {
@@ -148,5 +158,12 @@ public class ActivityRepository : IActivityRepository
         }
 
         return await query.ToListAsync();
+    }
+    public async Task<List<IGrouping<string, Activity>>> ProjectActivityByStatus(int projectId)
+    {
+        var query = _context.Activities.AsQueryable();
+        query = query.Where(a => a.ProjectId == projectId);
+        var queryByStatusQueary = query.GroupBy(a => a.Status);
+        return await queryByStatusQueary.ToListAsync();
     }
 }

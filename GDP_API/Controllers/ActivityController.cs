@@ -189,6 +189,55 @@ namespace GDP_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [HttpPost]
+        public async Task<IActionResult> CUserStatus(PostAStatus postAStatus)
+        {
+            try
+            {
+                await _service.CActivityStatus(postAStatus.Id, postAStatus.Status, postAStatus.Quantity);
+                return Ok();
+            }
+            catch(KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        public async Task<IActionResult> CActivitiesDelay(PostAOverdue postAOverdue)
+        {
+            try
+            {
+                await _service.CActivityOverDue(postAOverdue.Id, postAOverdue.Total, postAOverdue.Overdue);
+                return Ok();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("ProjectByActivityStatus"), Authorize()]
+        public async Task<IActionResult> ProjectByActivityStatus(ActivityByProjectStatus activityByProjectStatus)
+        {
+            try
+            {
+                await _service.ProjectStatus(activityByProjectStatus.ProjectId);
+                return Ok();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

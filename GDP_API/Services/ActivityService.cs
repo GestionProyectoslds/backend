@@ -154,6 +154,69 @@ public class ActivityService : IActivityService
         }
 
     }
+    public async Task CActivityStatus(int userId, string ActivityStatus, int Quantity)
+    {
+        _logger.LogInformation($"Showing: {ActivityStatus}");
+        try
+        {
+            var user = await _userService.GetUser(userId);
+            if (user is null)
+            {
+                throw new KeyNotFoundException(UNF);
+            }
+            await _repository.ShowActivitiesStatus(userId, ActivityStatus, Quantity);
+        }
+        catch(KeyNotFoundException e)
+        {
+            throw new KeyNotFoundException(e.Message);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+    }
+    public async Task CActivityOverDue(int userId, int total, int overDue)
+    {
+        _logger.LogInformation($"Showing: {total}, and {overDue}");
+        try
+        {
+            var user = await _userService.GetUser(userId);
+            if (user is null)
+            {
+                throw new KeyNotFoundException(UNF);
+            }
+            await _repository.ActivitiesOverDue(userId, total, overDue);
+        }
+        catch (KeyNotFoundException e)
+        {
+            throw new KeyNotFoundException(e.Message);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+    }
+    public async Task ProjectStatus(int projectId)
+    {
+        _logger.LogInformation($"");
+        try
+        {
+            var project = await _projectService.GetProjectById(projectId);
+            if (project is null)
+            {
+                throw new KeyNotFoundException(UNF);
+            }
+            await _repository.ProjectActivityByStatus(projectId);
+        }
+        catch (KeyNotFoundException e)
+        {
+            throw new KeyNotFoundException(e.Message);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+    }
     #region Private Methods
 
 
