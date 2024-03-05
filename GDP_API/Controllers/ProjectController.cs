@@ -1,5 +1,3 @@
-
-using GDP_API.Models;
 using GDP_API.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -92,8 +90,19 @@ namespace GDP_API.Controllers
         [HttpPost("create"), Authorize()]
         public async Task<IActionResult> CreateProject(ProjectCreationDTO projectDto)
         {
-            var project = await _service.CreateProject(projectDto);
-            return CreatedAtAction(nameof(GetProjectById), new { id = project.Id }, project);
+            try
+            {
+                var project = await _service.CreateProject(projectDto);
+                return Ok(project);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>

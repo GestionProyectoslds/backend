@@ -9,7 +9,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddHostedService<Cronjob>();
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -51,6 +51,9 @@ builder.Services.AddCors(options =>
                        .AllowAnyHeader();
             });
     });
+
+
+builder.Services.AddHostedService<StatisticsService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IExpertUserRepository, ExpertUserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -61,6 +64,8 @@ builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<IProjectCategoryRepository, ProjectCategoryRepository>();
 builder.Services.AddScoped<IProjectCategoryService, ProjectCategoryService>();
+builder.Services.AddScoped<IStatisticsService>(sp => sp.GetServices<IHostedService>().OfType<StatisticsService>().First());
+builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
 
 
 var app = builder.Build();
