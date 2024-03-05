@@ -159,4 +159,11 @@ public class ActivityRepository : IActivityRepository
 
         return await query.ToListAsync();
     }
+    public async Task<List<IGrouping<string, Activity>>> ProjectActivityByStatus(int projectId)
+    {
+        var query = _context.Activities.AsQueryable();
+        query = query.Where(a => a.ProjectId == projectId);
+        var queryByStatusQueary = query.GroupBy(a => a.Status);
+        return await queryByStatusQueary.ToListAsync();
+    }
 }

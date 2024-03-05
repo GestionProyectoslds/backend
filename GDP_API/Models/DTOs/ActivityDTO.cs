@@ -47,4 +47,10 @@ namespace GDP_API.Models.DTOs
         public int Quantity { get; set; }
 
     }
+    public class ActivityByProjectStatus
+    {
+        public int ProjectId { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public int Quantity { get; set; }
+    }
 }

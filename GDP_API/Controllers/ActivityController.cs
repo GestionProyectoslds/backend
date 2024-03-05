@@ -222,5 +222,22 @@ namespace GDP_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost("ProjectByActivityStatus"), Authorize()]
+        public async Task<IActionResult> ProjectByActivityStatus(ActivityByProjectStatus activityByProjectStatus)
+        {
+            try
+            {
+                await _service.ProjectStatus(activityByProjectStatus.ProjectId);
+                return Ok();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

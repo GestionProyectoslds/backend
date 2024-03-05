@@ -196,6 +196,27 @@ public class ActivityService : IActivityService
             throw new Exception(e.Message);
         }
     }
+    public async Task ProjectStatus(int projectId)
+    {
+        _logger.LogInformation($"");
+        try
+        {
+            var project = await _projectService.GetProjectById(projectId);
+            if (project is null)
+            {
+                throw new KeyNotFoundException(UNF);
+            }
+            await _repository.ProjectActivityByStatus(projectId);
+        }
+        catch (KeyNotFoundException e)
+        {
+            throw new KeyNotFoundException(e.Message);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+    }
     #region Private Methods
 
 

@@ -15,4 +15,5 @@ public interface IActivityRepository
     Task UnlinkUserFromActivity(int userId, int activityId);
     Task<List<string>> ShowActivitiesStatus(int userId, string Status, int Quantity);
     Task<List<int>> ActivitiesOverDue(int userId, int total, int overDue);
+    Task<List<IGrouping<string, Activity>>> ProjectActivityByStatus(int projectId);
 }

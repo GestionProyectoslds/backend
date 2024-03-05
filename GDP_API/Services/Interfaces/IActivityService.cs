@@ -14,4 +14,5 @@ public interface IActivityService
     Task UnlinkUserFromActivity(int userId, int activityId);
     Task CActivityStatus(int id, string status, int quantity);
     Task CActivityOverDue(int id, int total, int overdue);
+    Task ProjectStatus(int projectId);
 }
