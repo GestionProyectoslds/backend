@@ -11,7 +11,7 @@ namespace GDP_API.Models.DTOs
     }
     public class StatusCountDTO
     {
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         public int Count { get; set; }
     }
 }

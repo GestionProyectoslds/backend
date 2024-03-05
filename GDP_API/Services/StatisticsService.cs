@@ -4,8 +4,8 @@ public class StatisticsService : IHostedService, IStatisticsService
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private DashboardStatisticsDTO _statistics;
     private readonly object _updateLock = new object();
-    private Task _backgroundTask;
-    private CancellationTokenSource _cts;
+    private Task? _backgroundTask;
+    private CancellationTokenSource? _cts;
 
     public StatisticsService(IServiceScopeFactory serviceScopeFactory)
     {
@@ -30,8 +30,8 @@ public class StatisticsService : IHostedService, IStatisticsService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _cts.Cancel();
-        return Task.WhenAny(_backgroundTask, Task.Delay(-1, cancellationToken));
+        _cts!.Cancel();
+        return Task.WhenAny(_backgroundTask!, Task.Delay(-1, cancellationToken));
     }
 
     protected async Task ExecuteAsync(CancellationToken stoppingToken)

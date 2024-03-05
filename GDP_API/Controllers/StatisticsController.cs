@@ -14,6 +14,10 @@ namespace GDP_API.Controllers
             _statisticsService = statisticsService;
         }
 
+        /// <summary>
+        /// Retrieves the statistics.
+        /// </summary>
+        /// <returns>The statistics as an <see cref="IActionResult"/>.</returns>
         [HttpGet, Authorize()]
         public IActionResult GetStatistics()
         {

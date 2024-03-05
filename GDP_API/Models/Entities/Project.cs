@@ -13,8 +13,8 @@ namespace GDP_API.Models
         public bool IsActive { get; set; }
         public int? ProjectManagerId { get; set; }
         public User? ProjectManager { get; set; }
-        public ICollection<UserHasProject> UserHasProjects { get; set; }
-        public ICollection<ProjectHasCategory> ProjectHasCategories { get; set; }
-        public ICollection<Activity> Activities { get; set; }
+        public ICollection<UserHasProject>? UserHasProjects { get; set; }
+        public ICollection<ProjectHasCategory>? ProjectHasCategories { get; set; }
+        public ICollection<Activity>? Activities { get; set; }
     }
 }
