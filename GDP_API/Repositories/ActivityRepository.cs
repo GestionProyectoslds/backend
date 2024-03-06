@@ -13,6 +13,7 @@ public class ActivityRepository : IActivityRepository
     const string NotLinked = "User is not linked to activity";
     const string Linked = "User is already linked to activity";
     const string NoFilter = "At least one filter property must be set";
+    const string PDE = "Project does not exist";
     public ActivityRepository(DataContext context, ILogger<ActivityRepository> logger)
     {
         _context = context;
@@ -77,16 +78,6 @@ public class ActivityRepository : IActivityRepository
         }
         _context.UserHasActivities.Remove(userHasActivity);
         await _context.SaveChangesAsync();
-    }
-    public async Task<List<string>> ShowActivitiesStatus(int userId, string Status, int Quantity)
-    {
-        List<string> x = [userId.ToString(), Status, Quantity.ToString()];
-        return  x;
-    }
-    public async Task<List<int>> ActivitiesOverDue(int userId, int Total, int overDue)
-    {
-        List<int> x = [userId, Total, overDue];
-        return x;
     }
 
     public async Task<List<Activity>> GetActivitiesByUser(int userId)
@@ -159,11 +150,65 @@ public class ActivityRepository : IActivityRepository
 
         return await query.ToListAsync();
     }
-    public async Task<List<IGrouping<string, Activity>>> ProjectActivityByStatus(int projectId)
+    /// <summary>
+    /// Groups the activities count by status for a specific project.
+    /// </summary>
+    /// <param name="projectId">The ID of the project.</param>
+    /// <returns>A collection of <see cref="ActivitiesByProjectStatus"/> objects representing the activities count grouped by status.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when the project with the specified ID is not found.</exception>
+    public async Task<IEnumerable<ActivitiesByProjectStatus>> GroupActivitiesAndCountByStatus(int projectId)
     {
-        var query = _context.Activities.AsQueryable();
-        query = query.Where(a => a.ProjectId == projectId);
-        var queryByStatusQueary = query.GroupBy(a => a.Status);
-        return await queryByStatusQueary.ToListAsync();
+        try
+        {
+            if (await _context.Projects.FindAsync(projectId) is null)
+            {
+                throw new KeyNotFoundException(PDE);
+            }
+            //LINQ is a very nice language feature
+            var result = await _context.Activities
+    .Where(a => a.ProjectId == projectId)
+    .GroupBy(a => a.Status)
+    .Select(g => new
+    {
+        Status = g.Key,
+        Activities = g.Select(a => new
+        {
+            a.Id,
+            a.Description,
+            a.AcceptanceCriteria,
+            a.RequestedChanges,
+            a.Status,
+            a.ProjectId,
+            a.StartDate,
+            a.EndDate,
+            a.Blockers,
+            a.Priority,
+            a.UserHasActivities
+        }).ToList()
+    })
+    .ToListAsync();
+            return result.Select(r => new ActivitiesByProjectStatus
+            {
+                Status = r.Status,
+                Count = r.Activities.Count,
+                Activities = r.Activities.Select(a => new Activity
+                {
+                    Id = a.Id,
+                    Description = a.Description,
+                    AcceptanceCriteria = a.AcceptanceCriteria,
+                    RequestedChanges = a.RequestedChanges,
+                    Status = a.Status,
+                    StartDate = a.StartDate,
+                    EndDate = a.EndDate,
+                    Blockers = a.Blockers,
+                    Priority = a.Priority,
+                    UserHasActivities = a.UserHasActivities
+                }).ToList()
+            });
+        }
+        catch (KeyNotFoundException e)
+        {
+            throw new KeyNotFoundException(e.Message);
+        }
     }
 }
