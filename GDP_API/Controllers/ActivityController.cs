@@ -195,7 +195,7 @@ namespace GDP_API.Controllers
         {
             try
             {
-                return Ok(await _service.GroupActivitiesCountByStatus(projectID));
+                return Ok(await _service.GroupActivitiesAndCountByStatus(projectID));
             }
             catch (KeyNotFoundException ex)
             {
