@@ -190,5 +190,21 @@ namespace GDP_API.Controllers
             }
         }
 
+        [HttpGet("{projectID}/group/status"), Authorize()]
+        public async Task<IActionResult> GroupActivitiesByStatus(int projectID)
+        {
+            try
+            {
+                return Ok(await _service.GroupActivitiesAndCountByStatus(projectID));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

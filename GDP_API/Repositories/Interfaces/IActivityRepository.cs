@@ -13,4 +13,6 @@ public interface IActivityRepository
     Task DeleteActivity(int id);
     Task LinkUserToActivity(int userId, int activityId);
     Task UnlinkUserFromActivity(int userId, int activityId);
+
+    Task<IEnumerable<ActivitiesByProjectStatus>> GroupActivitiesAndCountByStatus(int projectId);
 }

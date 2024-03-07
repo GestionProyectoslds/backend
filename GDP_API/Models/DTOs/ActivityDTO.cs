@@ -34,4 +34,12 @@ namespace GDP_API.Models.DTOs
         public int ActivityId { get; set; }
     }
 
+
+    public class ActivitiesByProjectStatus
+    {
+
+        public string Status { get; set; } = string.Empty;
+        public int Count { get; set; }
+        public IEnumerable<Activity> Activities { get; set; } = [];
+    }
 }

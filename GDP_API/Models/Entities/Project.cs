@@ -10,8 +10,11 @@ namespace GDP_API.Models
         public decimal Budget { get; set; }
         public decimal Cost { get; set; }
         public string Comments { get; set; } = string.Empty;
-        public ICollection<UserHasProject> UserHasProjects { get; set; }
-        public ICollection<ProjectHasCategory> ProjectHasCategories { get; set; }
-        public ICollection<Activity> Activities { get; set; }
+        public bool IsActive { get; set; }
+        public int? ProjectManagerId { get; set; }
+        public User? ProjectManager { get; set; }
+        public ICollection<UserHasProject>? UserHasProjects { get; set; }
+        public ICollection<ProjectHasCategory>? ProjectHasCategories { get; set; }
+        public ICollection<Activity>? Activities { get; set; }
     }
 }

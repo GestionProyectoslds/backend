@@ -1,5 +1,3 @@
-
-using GDP_API.Models;
 using GDP_API.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -92,8 +90,19 @@ namespace GDP_API.Controllers
         [HttpPost("create"), Authorize()]
         public async Task<IActionResult> CreateProject(ProjectCreationDTO projectDto)
         {
-            var project = await _service.CreateProject(projectDto);
-            return CreatedAtAction(nameof(GetProjectById), new { id = project.Id }, project);
+            try
+            {
+                var project = await _service.CreateProject(projectDto);
+                return Ok(project);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>
@@ -174,6 +183,11 @@ namespace GDP_API.Controllers
         #endregion
         #region Categories
 
+        /// <summary>
+        /// Links a category to a project.
+        /// </summary>
+        /// <param name="linkProjectCategoryDTO">The DTO containing the category and project IDs.</param>
+        /// <returns>An ActionResult representing the result of the operation.</returns>
         [HttpPost("category/link"), Authorize()]
         public async Task<ActionResult> LinkCategoryToProject(LinkProjectCategoryDTO linkProjectCategoryDTO)
         {
@@ -191,6 +205,11 @@ namespace GDP_API.Controllers
 
 
 
+        /// <summary>
+        /// Unlinks a category from a project.
+        /// </summary>
+        /// <param name="linkProjectCategoryDTO">The DTO containing the category and project IDs.</param>
+        /// <returns>An <see cref="ActionResult"/> representing the result of the operation.</returns>
         [HttpPost("category/unlink"), Authorize()]
         public async Task<ActionResult> UnlinkCategoryFromProject(LinkProjectCategoryDTO linkProjectCategoryDTO)
         {

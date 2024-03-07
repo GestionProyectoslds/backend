@@ -10,6 +10,7 @@ public class ProjectService : IProjectService
     const string NF = "User not found";
     const string PNF = "Project not found";
     const string SWW = "Something went wrong";
+    private const string PMNF = "Project manager not found";
 
     public ProjectService(IProjectRepository repository, IUserService userService)
     {
@@ -46,6 +47,17 @@ public class ProjectService : IProjectService
     {
         try
         {
+            int? pmID = null;
+            if (projectDto.ProjectManagerId is not null && projectDto.ProjectManagerId != 0)
+            {
+                var projectManager = await _userService.GetUser(projectDto.ProjectManagerId!.Value);
+                if (projectManager is null)
+                {
+                    throw new KeyNotFoundException(PMNF);
+                }
+                pmID = projectManager.Id;
+            }
+
             var project = new Project
             {
                 Name = projectDto.Name,
@@ -53,10 +65,16 @@ public class ProjectService : IProjectService
                 StartDate = projectDto.StartDate,
                 EndDate = projectDto.EndDate,
                 Description = projectDto.Description,
-                Comments = projectDto.Comments
+                Comments = projectDto.Comments,
+                IsActive = projectDto.IsActive,
+                ProjectManagerId = pmID,
             };
 
             return await _repository.CreateProject(project);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            throw new KeyNotFoundException($"{SWW}\n{PMNF}", ex);
         }
         catch (Exception ex)
         {
@@ -73,6 +91,17 @@ public class ProjectService : IProjectService
     {
         try
         {
+            //DRY? never heard of her
+            int? pmID = null;
+            if (projectDto.ProjectManagerId is not null && projectDto.ProjectManagerId != 0)
+            {
+                var projectManager = await _userService.GetUser(projectDto.ProjectManagerId!.Value);
+                if (projectManager is null)
+                {
+                    throw new KeyNotFoundException(PMNF);
+                }
+                pmID = projectManager.Id;
+            }
             var project = await _repository.GetProjectById(projectDto.Id);
             if (project is null)
             {
@@ -82,6 +111,11 @@ public class ProjectService : IProjectService
             project.Budget = projectDto.Budget;
             project.StartDate = projectDto.StartDate;
             project.EndDate = projectDto.EndDate;
+            project.Description = projectDto.Description;
+            project.Comments = projectDto.Comments;
+            project.IsActive = projectDto.IsActive;
+
+            project.ProjectManagerId = pmID;
 
             await _repository.UpdateProject(project);
         }

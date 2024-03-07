@@ -33,6 +33,13 @@ namespace GDP_API.Data
             .HasOne(eu => eu.User)
             .WithOne()
             .HasForeignKey<ExpertUser>(eu => eu.UserId);
+            // Project has a foreign key to User 
+            modelBuilder.Entity<Project>()
+            .HasOne(p => p.ProjectManager)
+            .WithMany()
+            .HasForeignKey(p => p.ProjectManagerId)
+            .IsRequired(false) // This makes the foreign key optional
+            .OnDelete(DeleteBehavior.SetNull);
             // Project's budget and cost are decimal(18, 2)
             modelBuilder.Entity<Project>()
             .Property(p => p.Budget)
@@ -40,6 +47,7 @@ namespace GDP_API.Data
             modelBuilder.Entity<Project>()
             .Property(p => p.Cost)
             .HasColumnType("decimal(18, 2)");
+
             // UserHasProject has a composite key of UserId and ProjectId
             modelBuilder.Entity<UserHasProject>()
            .HasKey(uhp => new { uhp.UserId, uhp.ProjectId });
@@ -53,6 +61,7 @@ namespace GDP_API.Data
             .HasOne(uhp => uhp.Project)
             .WithMany(p => p.UserHasProjects)
             .HasForeignKey(uhp => uhp.ProjectId);
+
             // UserHasActivity has a composite key of UserId and ActivityId
             modelBuilder.Entity<UserHasActivity>()
             .HasKey(uha => new { uha.UserId, uha.ActivityId });

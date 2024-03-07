@@ -154,6 +154,21 @@ public class ActivityService : IActivityService
         }
 
     }
+    public async Task<IEnumerable<ActivitiesByProjectStatus>> GroupActivitiesAndCountByStatus(int projectId)
+    {
+        try
+        {
+            return await _repository.GroupActivitiesAndCountByStatus(projectId);
+        }
+        catch (KeyNotFoundException e)
+        {
+            throw new KeyNotFoundException(e.Message);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+    }
     #region Private Methods
 
 
