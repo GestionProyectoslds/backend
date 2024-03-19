@@ -19,9 +19,10 @@ namespace GDP_API.Controllers
         /// </summary>
         /// <returns>The statistics as an <see cref="IActionResult"/>.</returns>
         [HttpGet, Authorize()]
-        public IActionResult GetStatistics()
+        public async Task<IActionResult> GetStatistics()
         {
-            var statistics = _statisticsService.GetStatistics();
+            var jwt = Request.Headers["Authorization"].ToString().Replace("bearer ", "");
+            var statistics = await _statisticsService.GetStatistics(jwt);
             if (statistics == null)
             {
                 return NotFound(); // Return 404 if there are no statistics

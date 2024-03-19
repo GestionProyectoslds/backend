@@ -10,12 +10,12 @@ public interface IStatisticsRepository
     Task<int> GetCompleteProjectsCount();
     Task<int> GetInProgressProjectsCount();
     Task<IEnumerable<StatusCountDTO>> GetActivitiesCountByStatus();
-    Task<int> ExpertGetActiveProjectsCount(int userId);
-    Task<int> ExpertGetNormalUsersCount(int userId);
-    Task<int> ExpertGetExpertUsersCount(int userId);
-    Task<int> ExpertGetActivitiesCount(int userId);
-    Task<int> ExpertGetOverdueActivitiesCount(int userId);
-    Task<int> ExpertGetCompleteProjectsCount(int userId);
-    Task<int> ExpertGetInProgressProjectsCount(int userId);
-    Task<IEnumerable<StatusCountDTO>> ExpertGetActivitiesCountByStatus(int userId);
+    Task<int> GetActiveProjectsCount(int userId);
+    Task<int> GetNormalUsersCount(int userId);
+    Task<int> GetExpertUsersCount(int userId);
+    Task<int> GetActivitiesCount(int userId);
+    Task<int> GetOverdueActivitiesCount(int userId);
+    Task<int> GetCompleteProjectsCount(int userId);
+    Task<int> GetInProgressProjectsCount(int userId);
+    Task<IEnumerable<StatusCountDTO>> GetActivitiesCountByStatus(int userId);
 }
