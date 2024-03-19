@@ -11,6 +11,8 @@ namespace GDP_API.Models
         public decimal Cost { get; set; }
         public string Comments { get; set; } = string.Empty;
         public bool IsActive { get; set; }
+        public bool IsComplete { get; set; }
+
         public int? ProjectManagerId { get; set; }
         public User? ProjectManager { get; set; }
         public ICollection<UserHasProject>? UserHasProjects { get; set; }

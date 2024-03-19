@@ -1,4 +1,6 @@
+using GDP_API;
 using GDP_API.Models.DTOs;
+using System.IdentityModel.Tokens.Jwt;
 public class StatisticsService : IHostedService, IStatisticsService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -10,6 +12,7 @@ public class StatisticsService : IHostedService, IStatisticsService
     public StatisticsService(IServiceScopeFactory serviceScopeFactory)
     {
         _serviceScopeFactory = serviceScopeFactory;
+
         _statistics = new DashboardStatisticsDTO
         {
             ActiveProjectsCount = 0,
@@ -27,7 +30,6 @@ public class StatisticsService : IHostedService, IStatisticsService
         _backgroundTask = ExecuteAsync(_cts.Token);
         return Task.CompletedTask;
     }
-
     public Task StopAsync(CancellationToken cancellationToken)
     {
         _cts!.Cancel();
@@ -49,6 +51,8 @@ public class StatisticsService : IHostedService, IStatisticsService
                     ExpertUsersCount = await repo.GetExpertUsersCount(),
                     ActivitiesCount = await repo.GetActivitiesCount(),
                     OverdueActivitiesCount = await repo.GetOverdueActivitiesCount(),
+                    CompleteProjectsCount = await repo.GetCompleteProjectsCount(),
+                    InProgressProjectsCount = await repo.GetInProgressProjectsCount(),
                     ActivitiesCountByStatus = await repo.GetActivitiesCountByStatus()
                 };
 
@@ -69,11 +73,78 @@ public class StatisticsService : IHostedService, IStatisticsService
         }
     }
 
-    public DashboardStatisticsDTO GetStatistics()
+    public async Task<DashboardStatisticsDTO> NonAdminUserAsync(string jwt)
     {
-        lock (_updateLock)
+        // Extract the user ID from the JWT
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var jwtToken = tokenHandler.ReadJwtToken(jwt);
+        int userIdFromJwt = int.Parse(jwtToken.Claims.First(claim => claim.Type == "unique_name").Value);
+        UserType userTypeFromJwt = (UserType)Enum.Parse(typeof(UserType), jwtToken.Claims.Last(claim => claim.Type == "role").Value);
+
+        if (userTypeFromJwt == UserType.Expert || userTypeFromJwt == UserType.Admin)
         {
-            return _statistics;
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var repo = scope.ServiceProvider.GetRequiredService<IStatisticsRepository>();
+
+                var newStatistics = new DashboardStatisticsDTO
+                {
+                    ActiveProjectsCount = await repo.GetActiveProjectsCount(userIdFromJwt),
+                    NormalUsersCount = await repo.GetNormalUsersCount(userIdFromJwt),
+                    ExpertUsersCount = await repo.GetExpertUsersCount(userIdFromJwt),
+                    ActivitiesCount = await repo.GetActivitiesCount(userIdFromJwt),
+                    OverdueActivitiesCount = await repo.GetOverdueActivitiesCount(userIdFromJwt),
+                    CompleteProjectsCount = await repo.GetCompleteProjectsCount(userIdFromJwt),
+                    InProgressProjectsCount = await repo.GetInProgressProjectsCount(userIdFromJwt),
+                    ActivitiesCountByStatus = await repo.GetActivitiesCountByStatus(userIdFromJwt)
+                };
+
+                return newStatistics;
+            }
         }
+
+        // Default return statement
+        return new DashboardStatisticsDTO
+        {
+            ActiveProjectsCount = 0,
+            NormalUsersCount = 0,
+            ExpertUsersCount = 0,
+            ActivitiesCount = 0,
+            OverdueActivitiesCount = 0,
+            CompleteProjectsCount = 0,
+            InProgressProjectsCount = 0,
+            ActivitiesCountByStatus = new List<StatusCountDTO>()
+        };
     }
+
+    public async Task<DashboardStatisticsDTO> GetStatistics(string jwt)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var jwtToken = tokenHandler.ReadJwtToken(jwt);
+        var userTypeFromJwt = jwtToken.Claims.Last(claim => claim.Type == "role").Value;
+
+        if (Enum.TryParse(userTypeFromJwt, out UserType userType))
+        {
+            if (userType == UserType.Expert || userType == UserType.Normal)
+            {
+                return await NonAdminUserAsync(jwt);
+            }
+
+            else if (userType == UserType.Admin)
+            {
+                return _statistics;
+            }
+        }
+
+        return new DashboardStatisticsDTO
+        {
+            ActiveProjectsCount = 0,
+            NormalUsersCount = 0,
+            ExpertUsersCount = 0,
+            ActivitiesCount = 0,
+            OverdueActivitiesCount = 1,
+            ActivitiesCountByStatus = new List<StatusCountDTO>()
+        };
+    }
+
 }
