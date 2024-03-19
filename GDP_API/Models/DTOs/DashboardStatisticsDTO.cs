@@ -7,6 +7,8 @@ namespace GDP_API.Models.DTOs
         public int ExpertUsersCount { get; set; }
         public int ActivitiesCount { get; set; }
         public int OverdueActivitiesCount { get; set; }
+        public int CompleteProjectsCount { get; set; }
+        public int InProgressProjectsCount { get; set; }
         public IEnumerable<StatusCountDTO> ActivitiesCountByStatus { get; set; } = [];
     }
     public class StatusCountDTO
