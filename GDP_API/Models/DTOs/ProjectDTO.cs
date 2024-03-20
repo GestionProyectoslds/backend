@@ -10,6 +10,7 @@ namespace GDP_API.Models.DTOs
         public required decimal Cost { get; set; }
         public string Comments { get; set; } = string.Empty;
         public required bool IsActive { get; set; }
+        public ProjectPriority Priority { get; set; }
         public int? ProjectManagerId { get; set; }
     }
     public class ProjectDTO
@@ -23,6 +24,7 @@ namespace GDP_API.Models.DTOs
         public decimal Cost { get; set; }
         public string Comments { get; set; } = string.Empty;
         public bool IsActive { get; set; }
+        public ProjectPriority Priority { get; set; }
         public int? ProjectManagerId { get; set; }
     }
     public class ProjectFilterDTO
