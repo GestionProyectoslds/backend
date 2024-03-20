@@ -12,7 +12,7 @@ namespace GDP_API.Models
         public string Comments { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public bool IsComplete { get; set; }
-
+        public ProjectPriority Priority { get; set; }
         public int? ProjectManagerId { get; set; }
         public User? ProjectManager { get; set; }
         public ICollection<UserHasProject>? UserHasProjects { get; set; }

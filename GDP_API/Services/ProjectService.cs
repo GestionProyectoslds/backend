@@ -67,6 +67,7 @@ public class ProjectService : IProjectService
                 Description = projectDto.Description,
                 Comments = projectDto.Comments,
                 IsActive = projectDto.IsActive,
+                Priority = projectDto.Priority,
                 ProjectManagerId = pmID,
             };
 
@@ -114,7 +115,7 @@ public class ProjectService : IProjectService
             project.Description = projectDto.Description;
             project.Comments = projectDto.Comments;
             project.IsActive = projectDto.IsActive;
-
+            project.Priority = projectDto.Priority;
             project.ProjectManagerId = pmID;
 
             await _repository.UpdateProject(project);
